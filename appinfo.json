@@ -17,22 +17,22 @@
             {
                 "file": "images/tick.png",
                 "name": "IMAGE_TICK_ICON",
-                "type": "bitmap"
+                "type": "png"
             },
             {
                 "file": "images/cross.png",
                 "name": "IMAGE_CROSS_ICON",
-                "type": "bitmap"
+                "type": "png"
             },
             {
                 "file": "images/reuse.png",
                 "name": "IMAGE_REUSE_ICON",
-                "type": "bitmap"
+                "type": "png"
             },
             {
                 "file": "images/remove.png",
                 "name": "IMAGE_REMOVE_ICON",
-                "type": "bitmap"
+                "type": "png"
             }
         ]
     },
