@@ -119,8 +119,8 @@ var displayCard = function(type, index, next) {
   });
 
   card.action({
-    up: 'TICK',
-    down: 'TICK'
+    up: 'IMAGE_TICK_ICON',
+    down: 'IMAGE_TICK_ICON'
   });
 
   card.on('click', 'up', function() {
