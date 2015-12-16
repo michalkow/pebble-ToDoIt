@@ -17,7 +17,7 @@
             {
                 "file": "images/tick.png",
                 "name": "IMAGE_TICK_ICON",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/logo_splash.png",
