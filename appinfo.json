@@ -15,23 +15,38 @@
                 "type": "bitmap"
             },
             {
-                "file": "images/tick.png",
-                "name": "IMAGE_TICK_ICON",
+                "file": "images/logo_splash.png",
+                "name": "IMAGE_LOGO_SPLASH",
                 "type": "bitmap"
             },
             {
-                "file": "images/cross.png",
-                "name": "IMAGE_CROSS_ICON",
+                "file": "images/tile_splash.png",
+                "name": "IMAGE_TILE_SPLASH",
+                "type": "bitmap"
+            },
+            {
+                "file": "fonts/UbuntuMono-Regular.ttf",
+                "name": "MONO_FONT_14",
+                "type": "font"
+            },
+            {
+                "file": "images/tick.png",
+                "name": "IMAGES_TICK_PNG",
                 "type": "bitmap"
             },
             {
                 "file": "images/reuse.png",
-                "name": "IMAGE_REUSE_ICON",
+                "name": "IMAGES_REUSE_PNG",
                 "type": "bitmap"
             },
             {
                 "file": "images/remove.png",
-                "name": "IMAGE_REMOVE_ICON",
+                "name": "IMAGES_REMOVE_PNG",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/cross.png",
+                "name": "IMAGES_CROSS_PNG",
                 "type": "bitmap"
             }
         ]
