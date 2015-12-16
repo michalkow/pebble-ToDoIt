@@ -22,17 +22,17 @@
             {
                 "file": "images/cross.png",
                 "name": "IMAGE_CROSS_ICON",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/reuse.png",
                 "name": "IMAGE_REUSE_ICON",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/remove.png",
                 "name": "IMAGE_REMOVE_ICON",
-                "type": "png"
+                "type": "bitmap"
             }
         ]
     },
