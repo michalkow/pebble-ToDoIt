@@ -20,19 +20,19 @@
                 "type": "bitmap"
             },
             {
-                "file": "images/logo_splash.png",
-                "name": "IMAGE_LOGO_SPLASH",
+                "file": "images/cross.png",
+                "name": "IMAGE_CROSS_ICON",
                 "type": "bitmap"
             },
             {
-                "file": "images/tile_splash.png",
-                "name": "IMAGE_TILE_SPLASH",
+                "file": "images/reuse.png",
+                "name": "IMAGE_REUSE_ICON",
                 "type": "bitmap"
             },
             {
-                "file": "fonts/UbuntuMono-Regular.ttf",
-                "name": "MONO_FONT_14",
-                "type": "font"
+                "file": "images/remove.png",
+                "name": "IMAGE_REMOVE_ICON",
+                "type": "bitmap"
             }
         ]
     },
