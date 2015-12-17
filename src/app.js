@@ -12,14 +12,25 @@ var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 
 var Settings = require('settings');
-Settings.config(
-  { url: 'http://michalkow.github.io/pebble-ToDoIt/' },
+
+var configCard = new UI.Card({
+  title: "ToDoIt configuration is open",
+  body: "Check your phone for configuration options",
+  fullscreen: true,
+  backgroundColor: '#55AAFF'
+});
+
+Settings.config({ 
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night') 
+  },
   function(e) {
     console.log('opening configurable');
+    configCard.show();
   },
   function(e) {
     console.log('closed configurable');
     console.log(JSON.stringify(e.options));
+    configCard.hide();
   }
 );
 
@@ -149,8 +160,7 @@ var main = new UI.Menu({
       {title: 'Add New Task', icon: 'images/plus.png'},
       {title: 'Check Tasks'},
       {title: 'Task List'},
-      {title: 'History'},
-      {title: 'Clean History', icon: 'images/remove.png'}
+      {title: 'History'}
     ]
   }]
 });
@@ -163,7 +173,7 @@ var displayCard = function(type, index, next) {
   var task = store.getTask(type, index);
   var card = new UI.Card({
     title: task.title,
-    subtitle: daysAgo(task.added),
+    body: daysAgo(task.added),
     fullscreen: true,
     backgroundColor: '#55AAFF'
   });
@@ -231,7 +241,7 @@ var displayTasks = function(type) {
           menu.items(0, store.getDisplayTasks(type));
         });
       }
-    } else displayCard(type, e.itemIndex, -1);
+    } else displayCard(type, e.itemIndex-1, -1);
   });
 
   menu.show();
@@ -242,7 +252,6 @@ main.on('select', function(e) {
   else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
   else if(e.itemIndex == 2) displayTasks('tasks');
   else if(e.itemIndex == 3) displayTasks('history');
-  else if(e.itemIndex == 4) store.clearHistory();
 });
 
 main.show();
