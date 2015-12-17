@@ -98,7 +98,7 @@ var voiceAdd = function(callback) {
     } else {
       confirmTask(e.transcription, function(resp) {
         if(resp) {
-          store.addTask();
+          store.addTask(e.transcription);
           if(callback) callback();
         } else {
           voiceAdd(callback);
