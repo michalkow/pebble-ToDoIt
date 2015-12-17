@@ -85,6 +85,11 @@ var daysAgo = function(added) {
   else if(diffDays>1) return "Added "+diffDays+" ago";
 }
 
+var validateTime = function(time) {
+  if(time > 0 && time < 24) return true;
+  else return false;
+}
+
 var voiceAdd = function(callback) {
   Voice.dictate('start', false, function(e) {
     if (e.err) {
@@ -115,7 +120,7 @@ var setNextAlert = function() {
     if(nextDay == 6) nextDay = 0;
     else nextDay++; 
   }
-  console.log('wakeup', nextDay, nextHours);
+  console.log('wakeup ' + nextDay + ' ' + nextHours);
   var nextTime = Clock.weekday(nextDay, nextHours, 0);
   Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
     function(e) {
@@ -265,12 +270,14 @@ Settings.config({
     url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night') 
   },
   function(e) {
-    console.log('opening configurable');
     configuration.show();
   },
   function(e) {
-    console.log('closed configurable');
-    console.log(JSON.stringify(e.options));
+    if(e.options) {
+      if(e.options.morning && validateTime(e.options.morning)) Settings.option('morning', e.options.morning);
+      if(e.options.evening && validateTime(e.options.evening)) Settings.option('evening', e.options.evening);
+      if(e.options.night && validateTime(e.options.night)) Settings.option('night', e.options.night);
+    }
     configuration.hide();
   }
 );
