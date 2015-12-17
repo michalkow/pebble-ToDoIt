@@ -31,7 +31,7 @@ var store = {
     if(!type) type = 'tasks';
     var value = pebbleStorage.getItem(type);
     var tasks = value ? JSON.parse(value) : [];
-    if(type=="history") tasks.unshift({title: "Clean History", icon: "images/remove-icon.png"});
+    if(type=="history") tasks.unshift({title: "Clear History", icon: "images/remove.png"});
     else tasks.unshift({title: "Add New Task", icon: "images/plus.png"});
     return tasks;
   },
@@ -240,7 +240,7 @@ var main = new UI.Menu({
   sections: [{
     items: [
       {title: 'Add New Task', icon: 'images/plus.png'},
-      {title: 'Complete Tasks', icon: 'images/check.png'},
+      {title: 'Do Tasks', icon: 'images/check.png'},
       {title: 'Browse Tasks', icon: 'images/tasks.png'},
       {title: 'Task History', icon: 'images/history.png'}
     ]
@@ -277,6 +277,7 @@ Settings.config({
   },
   function(e) {
     if(e.options) {
+      console.log(JSON.stringify(e.options));
       if(e.options.morning && validateTime(e.options.morning)) Settings.option('morning', e.options.morning);
       if(e.options.evening && validateTime(e.options.evening)) Settings.option('evening', e.options.evening);
       if(e.options.night && validateTime(e.options.night)) Settings.option('night', e.options.night);
