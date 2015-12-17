@@ -1,20 +1,73 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>ToDoIt Settings</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="https://bootswatch.com/paper/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
-	<div>
-		<label>Morning</label>
-		<input name="morning" id="morning" type="text" placeholder="10:00" />
+	<div class="container-fluid">
+		<div class="alert alert-info" style="background-color: #2196f3; margin-top: 20px;">
+		  <p>Set up what times (0-23) during the day you want to be reminded about your tasks.</p>
+		</div>
+		<form>
+			<div class="form-group">
+				<label class="control-label" for="morning">Morning</label>
+				<input class="form-control" name="morning" id="morning" type="text" placeholder="10" />
+			</div>
+			<div class="form-group">
+				<label class="control-label" for="evening">Evening</label>
+				<input class="form-control" name="evening" id="evening" type="text" placeholder="17" />
+			</div>
+			<div class="form-group">
+				<label class="control-label" for="night">Night</label>
+				<input class="form-control" name="night" id="night" type="text" placeholder="22" />
+			</div>
+			<div class="form-group text-center">
+				<button class="btn btn-primary" type="submit">Save</button>
+			</div>
+		</form>
 	</div>
-	<div>
-		<label>Evening</label>
-		<input name="evening" id="evening" type="text" placeholder="17:00" />
-	</div>
-	<div>
-		<label>Night</label>
-		<input name="night" id="night" type="text" placeholder="22:00" />
-	</div>
+	<script type="text/javascript">
+		var QueryString = function () {
+		  // This function is anonymous, is executed immediately and 
+		  // the return value is assigned to QueryString!
+		  var query_string = {};
+		  var query = window.location.search.substring(1);
+		  var vars = query.split("&");
+		  for (var i=0;i<vars.length;i++) {
+		    var pair = vars[i].split("=");
+		        // If first entry with this name
+		    if (typeof query_string[pair[0]] === "undefined") {
+		      query_string[pair[0]] = decodeURIComponent(pair[1]);
+		        // If second entry with this name
+		    } else if (typeof query_string[pair[0]] === "string") {
+		      var arr = [ query_string[pair[0]],decodeURIComponent(pair[1]) ];
+		      query_string[pair[0]] = arr;
+		        // If third or later entry with this name
+		    } else {
+		      query_string[pair[0]].push(decodeURIComponent(pair[1]));
+		    }
+		  } 
+		  return query_string;
+		};
+
+		var query = QueryString();
+
+		if(query && query.morning) document.getElementById('morning').value = query.morning;
+		if(query && query.evening) document.getElementById('evening').value = query.evening);
+		if(query && query.night) document.getElementById('night').value = query.night;
+
+		$('form').submit(function() {
+			var options = {
+				morning: document.getElementById('morning').value,
+				evening: document.getElementById('evening').value,
+				night: document.getElementById('night').value
+			}
+			document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+		});
+
+	</script>
 </body>
 </html>
