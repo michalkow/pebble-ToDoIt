@@ -103,9 +103,9 @@ var voiceAdd = function(callback) {
 }
 
 var setNextAlert = function() {
-  var morning = 10;
-  var evening = 17;
-  var night = 22;
+  var morning = Settings.option('morning') ? Settings.option('morning') : 10;
+  var evening = Settings.option('evening') ? Settings.option('evening') : 17;
+  var night = Settings.option('night') ? Settings.option('night') : 22;
   // Take date 10 min from now
   var now = new Date(new Date().getTime() + 10 * 60 * 1000);
   var day = now.getUTCDay();
