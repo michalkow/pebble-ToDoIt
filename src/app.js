@@ -96,8 +96,14 @@ var voiceAdd = function(callback) {
       console.log('Error: ' + e.err);
       return;
     } else {
-      store.addTask(e.transcription);
-      if(callback) callback();
+      confirmTask(e.transcription, function(resp) {
+        if(resp) {
+          store.addTask();
+          if(callback) callback();
+        } else {
+          voiceAdd(callback);
+        }
+      });
     }
   });
 };
@@ -189,6 +195,32 @@ var displayCard = function(type, index, next) {
   card.show();
 };
 
+var confirmTask = function(text, callback) {
+  var card = new UI.Card({
+    title: "Add Task?",
+    body: text,
+    fullscreen: true,
+    backgroundColor: '#55FFAA'
+  });
+
+  card.action({
+    up: 'images/tick.png',
+    down: 'images/cross.png'
+  });
+  
+  card.on('click', 'up', function() {
+    card.hide();
+    callback(true);
+  });
+
+  card.on('click', 'down', function() {
+    card.hide();
+    callback(false);
+  });
+
+  card.show();
+}
+
 var configuration = new UI.Card({
   title: "ToDoIt configuration is open",
   body: "Check your phone for configuration options",
@@ -270,7 +302,8 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night') 
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night'),
+    autoSave: false
   },
   function(e) {
     console.log('http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night'));
