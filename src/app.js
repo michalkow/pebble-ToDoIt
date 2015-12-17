@@ -98,11 +98,11 @@ var main = new UI.Menu({
   highlightTextColor: 'white',
   sections: [{
     items: [
-      {title: '+ Add New Task'},
+      {title: 'Add New Task', icon: 'images/plus.png'},
       {title: 'Check Tasks'},
       {title: 'Task List'},
       {title: 'History'},
-      {title: 'Clean History'}
+      {title: 'Clean History', icon: 'images/remove.png'}
     ]
   }]
 });
@@ -119,10 +119,17 @@ var displayCard = function(type, index, next) {
     backgroundColor: '#55AAFF'
   });
 
-  card.action({
-    up: 'images/tick.png',
-    down: 'images/tick.png'
-  });
+  if(type == "history") {
+    card.action({
+      up: 'images/reuse.png',
+      down: 'images/remove.png'
+    });
+  } else {
+    card.action({
+      up: 'images/tick.png',
+      down: 'images/cross.png'
+    });
+  }
 
   card.on('click', 'up', function() {
     if(type == "history") {
