@@ -10,18 +10,6 @@ var Clock = require('clock');
 var Wakeup = require('wakeup');
 var Vibe = require('ui/vibe');
 var Light = require('ui/light');
-var Settings = require('settings');
-
-Settings.config(
-  { url: 'http://michalkow.github.io/pebble-ToDoIt/' },
-  function(e) {
-    console.log('opening configurable');
-  },
-  function(e) {
-    console.log('closed configurable');
-    console.log(JSON.stringify(e.options));
-  }
-);
 
 var pebbleStorage = window.localStorage || localStorage;
 var store = {
@@ -56,7 +44,7 @@ var store = {
     var tasks = [];
     if(value) tasks = JSON.parse(value);
     var task = {title: text};
-    tasks.push(task);
+    tasks.unshift(task);
     return pebbleStorage.setItem('tasks', JSON.stringify(tasks));
   },
   moveTask: function(from, to, index) {
@@ -84,6 +72,18 @@ var store = {
     return pebbleStorage.setItem('history', JSON.stringify(history));
   }
 };
+
+var voiceAdd = function(callback) {
+  Voice.dictate('start', false, function(e) {
+    if (e.err) {
+      console.log('Error: ' + e.err);
+      return;
+    } else {
+      store.addTask(e.transcription);
+      if(callback) callback();
+    }
+  });
+}
 
 var setNextAlert = function() {
   var morning = 10;
@@ -186,7 +186,6 @@ var displayCard = function(type, index, next) {
 };
 
 var displayTasks = function(type) {
-  var tasks = store.getDisplayTasks(type);
   var menu = new UI.Menu({
     fullscreen: true,
     textColor: '#0055AA',
@@ -194,28 +193,29 @@ var displayTasks = function(type) {
     highlightTextColor: 'white',
     sections: [{
       title: type,
-      items: tasks
+      items: store.getDisplayTasks(type)
     }]
   });
 
   menu.on('select', function(e) {
-    displayCard(type, e.itemIndex, -1);
+    if(e.itemIndex == 0) {
+      if(type == "history") {
+        store.clearHistory();
+        menu.items(0, store.getDisplayTasks(type));
+      } else {
+        voiceAdd(function() {
+          menu.items(0, store.getDisplayTasks(type));
+        });
+      }
+    } else displayCard(type, e.itemIndex, -1);
   });
 
   menu.show();
 };
 
 main.on('select', function(e) {
-  if(e.itemIndex == 0) {
-    Voice.dictate('start', false, function(e) {
-      if (e.err) {
-        console.log('Error: ' + e.err);
-        return;
-      } else {
-        store.addTask(e.transcription);
-      }
-    });
-  } else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
+  if(e.itemIndex == 0) voiceAdd(function() { displayTasks('tasks') });
+  else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
   else if(e.itemIndex == 2) displayTasks('tasks');
   else if(e.itemIndex == 3) displayTasks('history');
   else if(e.itemIndex == 4) store.clearHistory();
