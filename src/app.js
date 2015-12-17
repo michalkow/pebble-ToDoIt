@@ -193,8 +193,7 @@ var configuration = new UI.Card({
   title: "ToDoIt configuration is open",
   body: "Check your phone for configuration options",
   fullscreen: true,
-  textColor: 'white',
-  backgroundColor: '#0055AA'
+  backgroundColor: '#55AAFF'
 });
 
 var tasks = new UI.Menu({
@@ -253,7 +252,7 @@ main.on('select', function(e) {
     tasks.items(0, store.getDisplayTasks('tasks')); 
     tasks.show(); 
   });
-  else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
+  else if(e.itemIndex == 1) if(store.getTasks('tasks').length > 0) displayCard('tasks', 0, 1);
   else if(e.itemIndex == 2) tasks.show();
   else if(e.itemIndex == 3) history.show();
 });
@@ -261,9 +260,12 @@ main.on('select', function(e) {
 main.show();
 
 Wakeup.on('wakeup', function(e) {
-  displayCard('tasks', 0, 1);
-  Light.trigger();
-  Vibe.vibrate('short');
+  if(store.getTasks('tasks').length > 0) {
+    displayCard('tasks', 0, 1);
+    Light.trigger();
+    Vibe.vibrate('short');
+  }
+  setNextAlert();
 });
 
 Settings.config({ 
@@ -277,6 +279,8 @@ Settings.config({
       if(e.options.morning && validateTime(e.options.morning)) Settings.option('morning', e.options.morning);
       if(e.options.evening && validateTime(e.options.evening)) Settings.option('evening', e.options.evening);
       if(e.options.night && validateTime(e.options.night)) Settings.option('night', e.options.night);
+      Wakeup.cancel('all');
+      setNextAlert();
     }
     configuration.hide();
   }
