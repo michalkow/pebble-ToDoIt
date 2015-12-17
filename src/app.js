@@ -10,29 +10,7 @@ var Clock = require('clock');
 var Wakeup = require('wakeup');
 var Vibe = require('ui/vibe');
 var Light = require('ui/light');
-
 var Settings = require('settings');
-
-var configCard = new UI.Card({
-  title: "ToDoIt configuration is open",
-  body: "Check your phone for configuration options",
-  fullscreen: true,
-  backgroundColor: '#55AAFF'
-});
-
-Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night') 
-  },
-  function(e) {
-    console.log('opening configurable');
-    configCard.show();
-  },
-  function(e) {
-    console.log('closed configurable');
-    console.log(JSON.stringify(e.options));
-    configCard.hide();
-  }
-);
 
 var pebbleStorage = window.localStorage || localStorage;
 var store = {
@@ -40,7 +18,7 @@ var store = {
     var time = pebbleStorage.getItem('alert');
     return time ? time : 0;
   },
-  setNextAlert: function(time) {
+  setAlert: function(time) {
     return pebbleStorage.setItem('alert', new Date(time).getTime());
   },
   getTasks: function(type) {
@@ -145,11 +123,18 @@ var setNextAlert = function() {
         // Log the error reason
         console.log('Wakeup set failed: ' + e.error);
       } else {
-        store.setNextAlert(nextTime);
+        store.setAlert(nextTime);
       }
     }
   );
 };
+
+var configuration = new UI.Card({
+  title: "ToDoIt configuration is open",
+  body: "Check your phone for configuration options",
+  fullscreen: true,
+  backgroundColor: '#55AAFF'
+});
 
 var tasks = new UI.Menu({
   fullscreen: true,
@@ -157,7 +142,7 @@ var tasks = new UI.Menu({
   highlightBackgroundColor: '#0055AA',
   highlightTextColor: 'white',
   sections: [{
-    title: type,
+    title: "Current Tasks",
     items: store.getDisplayTasks('tasks')
   }]
 });
@@ -176,7 +161,7 @@ var history = new UI.Menu({
   highlightBackgroundColor: '#0055AA',
   highlightTextColor: 'white',
   sections: [{
-    title: type,
+    title: 'Task History',
     items: store.getDisplayTasks('history')
   }]
 });
@@ -201,6 +186,38 @@ var main = new UI.Menu({
     ]
   }]
 });
+
+main.on('select', function(e) {
+  if(e.itemIndex == 0) voiceAdd(function() { 
+    tasks.items(0, store.getDisplayTasks('tasks')); 
+    tasks.show(); 
+  });
+  else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
+  else if(e.itemIndex == 2) tasks.show();
+  else if(e.itemIndex == 3) history.show();
+});
+
+main.show();
+
+Wakeup.on('wakeup', function(e) {
+  displayCard('tasks', 0, 1);
+  Light.trigger();
+  Vibe.vibrate('short');
+});
+
+Settings.config({ 
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night') 
+  },
+  function(e) {
+    console.log('opening configurable');
+    configuration.show();
+  },
+  function(e) {
+    console.log('closed configurable');
+    console.log(JSON.stringify(e.options));
+    configuration.hide();
+  }
+);
 
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
@@ -255,21 +272,3 @@ var displayCard = function(type, index, next) {
 
   card.show();
 };
-
-main.on('select', function(e) {
-  if(e.itemIndex == 0) voiceAdd(function() { 
-    tasks.items(0, store.getDisplayTasks('tasks')); 
-    tasks.show(); 
-  });
-  else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
-  else if(e.itemIndex == 2) tasks.show();
-  else if(e.itemIndex == 3) history.show();
-});
-
-main.show();
-
-Wakeup.on('wakeup', function(e) {
-  displayCard('tasks', 0, 1);
-  Light.trigger();
-  Vibe.vibrate('short');
-});
