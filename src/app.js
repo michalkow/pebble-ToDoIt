@@ -273,6 +273,7 @@ Settings.config({
     url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night') 
   },
   function(e) {
+    console.log('http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night'));
     configuration.show();
   },
   function(e) {
