@@ -146,7 +146,7 @@ var displayCard = function(type, index, next) {
     title: task.title,
     body: daysAgo(task.added),
     fullscreen: true,
-    backgroundColor: '#55AAFF'
+    backgroundColor: '#00AAFF'
   });
 
   if(type == "history") {
@@ -200,7 +200,7 @@ var confirmTask = function(text, callback) {
     title: "Add Task?",
     body: text,
     fullscreen: true,
-    backgroundColor: '#55FFAA'
+    backgroundColor: '#00AA55'
   });
 
   card.action({
@@ -225,7 +225,7 @@ var configuration = new UI.Card({
   title: "ToDoIt configuration is open",
   body: "Check your phone for configuration options",
   fullscreen: true,
-  backgroundColor: '#55AAFF'
+  backgroundColor: '#00AAFF'
 });
 
 var tasks = new UI.Menu({
