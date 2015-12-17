@@ -55,7 +55,7 @@ var store = {
     var value = pebbleStorage.getItem('tasks');
     var tasks = [];
     if(value) tasks = JSON.parse(value);
-    var task = {title: text};
+    var task = {title: text, added: new Date()};
     tasks.unshift(task);
     return pebbleStorage.setItem('tasks', JSON.stringify(tasks));
   },
@@ -84,6 +84,17 @@ var store = {
     return pebbleStorage.setItem('history', JSON.stringify(history));
   }
 };
+
+var daysAgo = function(added) {
+  var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+  var now = new Date();
+  added = new Date(added);
+  var diffDays = Math.round(Math.abs((added.getTime() - now.getTime())/(oneDay)));
+
+  if(diffDays<1) return "Added Today";
+  else if(diffDays==1) return "Added Yesterday";
+  else if(diffDays>1) return "Added "+diffDays+" ago";
+}
 
 var voiceAdd = function(callback) {
   Voice.dictate('start', false, function(e) {
@@ -152,6 +163,7 @@ var displayCard = function(type, index, next) {
   var task = store.getTask(type, index);
   var card = new UI.Card({
     title: task.title,
+    subtitle: daysAgo(task.added),
     fullscreen: true,
     backgroundColor: '#55AAFF'
   });
