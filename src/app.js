@@ -8,6 +8,8 @@ var UI = require('ui');
 var Voice = require('ui/voice');
 var Clock = require('clock');
 var Wakeup = require('wakeup');
+var Vibe = require('ui/vibe');
+var Light = require('ui/light');
 
 var pebbleStorage = window.localStorage || localStorage;
 var store = {
@@ -21,8 +23,16 @@ var store = {
   getTasks: function(type) {
     if(!type) type = 'tasks';
     var value = pebbleStorage.getItem(type);
-    if(value) return JSON.parse(value);
-    else return [];
+    var tasks = value ? JSON.parse(value) : [];
+    return tasks;
+  },
+  getDisplayTasks: function(type) {
+    if(!type) type = 'tasks';
+    var value = pebbleStorage.getItem(type);
+    var tasks = value ? JSON.parse(value) : [];
+    if(type=="history") tasks.unshift({title: "Clean History", icon: "images/remove.png"});
+    else tasks.unshift({title: "Add New Task", icon: "images/plus.png"});
+    return tasks;
   },
   getTask: function(type, index) {
     var value = pebbleStorage.getItem(type);
@@ -64,23 +74,26 @@ var store = {
 };
 
 var setNextAlert = function() {
+  var morning = 10;
+  var evening = 17;
+  var night = 22;
   // Take date 10 min from now
   var now = new Date(new Date().getTime() + 10 * 60 * 1000);
   var day = now.getUTCDay();
   var hours = now.getHours();
   var nextDay = day;
-  var nextHours = 10;
-  if(hours < 10) nextHours = 10;
-  else if(hours < 17) nextHours = 17;
-  else if(hours < 22) nextHours = 22;
-  else if(hours > 22) {
-    nextHours = 10;
+  var nextHours = morning;
+  if(hours < morning) nextHours = morning;
+  else if(hours < evening) nextHours = evening;
+  else if(hours < night) nextHours = night;
+  else if(hours > night) {
+    nextHours = morning;
     if(nextDay == 6) nextDay = 0;
     else nextDay++; 
   }
   console.log('wakeup', nextDay, nextHours);
   var nextTime = Clock.weekday(nextDay, nextHours, 0);
-  Wakeup.schedule({time: nextTime, data: {}},
+  Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
     function(e) {
       if (e.failed) {
         // Log the error reason
@@ -161,7 +174,7 @@ var displayCard = function(type, index, next) {
 };
 
 var displayTasks = function(type) {
-  var tasks = store.getTasks(type);
+  var tasks = store.getDisplayTasks(type);
   var menu = new UI.Menu({
     fullscreen: true,
     textColor: '#0055AA',
@@ -200,4 +213,6 @@ main.show();
 
 Wakeup.on('wakeup', function(e) {
   displayCard('tasks', 0, 1);
+  Light.trigger();
+  Vibe.vibrate('short');
 });
