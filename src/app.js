@@ -91,19 +91,38 @@ var validateTime = function(time) {
 };
 
 var voiceAdd = function(callback) {
+  var card = new UI.Card({
+    title: "Add Task?",
+    body: "",
+    fullscreen: true,
+    backgroundColor: '#00AA55'
+  });
+
+  card.action({
+    up: 'images/tick.png',
+    down: 'images/cross.png'
+  });
+  
+  card.on('click', 'up', function() {
+    console.log(JSON.stringify(card));
+    console.log(JSON.stringify(card.body));
+    console.log(JSON.stringify(card.body()));
+    store.addTask(card.body());
+    card.hide();
+  });
+
+  card.on('click', 'down', function() {
+    voiceAdd(callback);
+    card.hide();
+  });
+
+
   Voice.dictate('start', false, function(e) {
     if (e.err) {
       console.log('Error: ' + e.err);
       return;
     } else {
-      confirmTask(e.transcription, function(resp) {
-        if(resp) {
-          store.addTask(e.transcription);
-          if(callback) callback();
-        } else {
-          voiceAdd(callback);
-        }
-      });
+      card.body(e.transcription);
     }
   });
 };
@@ -194,32 +213,6 @@ var displayCard = function(type, index, next) {
 
   card.show();
 };
-
-var confirmTask = function(text, callback) {
-  var card = new UI.Card({
-    title: "Add Task?",
-    body: text,
-    fullscreen: true,
-    backgroundColor: '#00AA55'
-  });
-
-  card.action({
-    up: 'images/tick.png',
-    down: 'images/cross.png'
-  });
-  
-  card.on('click', 'up', function() {
-    card.hide();
-    callback(true);
-  });
-
-  card.on('click', 'down', function() {
-    card.hide();
-    callback(false);
-  });
-
-  card.show();
-}
 
 var configuration = new UI.Card({
   title: "ToDoIt configuration is open",
