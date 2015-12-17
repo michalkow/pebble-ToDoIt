@@ -4,7 +4,6 @@
 	<title>ToDoIt Settings</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="https://bootswatch.com/paper/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
 	<div class="container-fluid">
@@ -59,7 +58,7 @@
 		if(query && query.evening) document.getElementById('evening').value = query.evening;
 		if(query && query.night) document.getElementById('night').value = query.night;
 
-		$('form').submit(function(e) {
+		window.onsubmit = function(e) {
 			e.preventDefault();
 			var options = {
 				morning: document.getElementById('morning').value,
@@ -67,7 +66,7 @@
 				night: document.getElementById('night').value
 			}
 			document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
-		});
+		};
 
 	</script>
 </body>
