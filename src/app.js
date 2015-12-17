@@ -129,11 +129,67 @@ var setNextAlert = function() {
   );
 };
 
+var displayCard = function(type, index, next) {
+  var task = store.getTask(type, index);
+  var card = new UI.Card({
+    title: task.title,
+    body: daysAgo(task.added),
+    fullscreen: true,
+    backgroundColor: '#55AAFF'
+  });
+
+  if(type == "history") {
+    card.action({
+      up: 'images/reuse.png',
+      down: 'images/remove.png'
+    });
+  } else {
+    card.action({
+      up: 'images/tick.png',
+      down: 'images/cross.png'
+    });
+  }
+
+  card.on('click', 'up', function() {
+    if(type == "history") {
+      store.moveTask("history", "tasks", index);
+      tasks.items(0, store.getDisplayTasks('tasks'));
+      history.items(0, store.getDisplayTasks('history'));
+      tasks.show();
+      card.hide();
+    } else {
+      store.moveTask("tasks", "history", index);
+      tasks.items(0, store.getDisplayTasks('tasks'));
+      history.items(0, store.getDisplayTasks('history'));
+      if(next>=0) next--;
+      if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
+      else main.show();
+      card.hide();
+    }
+  });
+
+  card.on('click', 'down', function() {
+    if(type == "history") {
+      store.removeTask(index);
+      history.items(0, store.getDisplayTasks('history'));
+      history.show();   
+      card.hide();   
+    } else {
+      if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
+      else main.show();
+      card.hide();
+    }
+  });
+
+  card.show();
+};
+
 var configuration = new UI.Card({
   title: "ToDoIt configuration is open",
   body: "Check your phone for configuration options",
   fullscreen: true,
-  backgroundColor: '#55AAFF'
+  textColor: 'white',
+  backgroundColor: '#0055AA'
 });
 
 var tasks = new UI.Menu({
@@ -222,53 +278,3 @@ Settings.config({
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
 }
-
-var displayCard = function(type, index, next) {
-  var task = store.getTask(type, index);
-  var card = new UI.Card({
-    title: task.title,
-    body: daysAgo(task.added),
-    fullscreen: true,
-    backgroundColor: '#55AAFF'
-  });
-
-  if(type == "history") {
-    card.action({
-      up: 'images/reuse.png',
-      down: 'images/remove.png'
-    });
-  } else {
-    card.action({
-      up: 'images/tick.png',
-      down: 'images/cross.png'
-    });
-  }
-
-  card.on('click', 'up', function() {
-    if(type == "history") {
-      store.moveTask("history", "tasks", index);
-      main.show();
-      card.hide();
-    } else {
-      store.moveTask("tasks", "history", index);
-      if(next>=0) next--;
-      if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
-      else main.show();
-      card.hide();
-    }
-  });
-
-  card.on('click', 'down', function() {
-    if(type == "history") {
-      store.removeTask(index);
-      main.show();   
-      card.hide();   
-    } else {
-      if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
-      else main.show();
-      card.hide();
-    }
-  });
-
-  card.show();
-};
