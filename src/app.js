@@ -11,6 +11,18 @@ var Wakeup = require('wakeup');
 var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 
+var Settings = require('settings');
+Settings.config(
+  { url: 'http://michalkow.github.io/pebble-ToDoIt/' },
+  function(e) {
+    console.log('opening configurable');
+  },
+  function(e) {
+    console.log('closed configurable');
+    console.log(JSON.stringify(e.options));
+  }
+);
+
 var pebbleStorage = window.localStorage || localStorage;
 var store = {
   getNextAlert: function() {
