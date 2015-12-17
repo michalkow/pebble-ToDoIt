@@ -116,6 +116,7 @@ var voiceAdd = function(callback) {
     card.hide();
   });
 
+  card.show();
 
   Voice.dictate('start', false, function(e) {
     if (e.err) {
