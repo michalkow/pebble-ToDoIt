@@ -198,8 +198,8 @@ var configuration = new UI.Card({
 
 var tasks = new UI.Menu({
   fullscreen: true,
-  textColor: '#0055AA',
-  highlightBackgroundColor: '#0055AA',
+  textColor: 'black',
+  highlightBackgroundColor: 'black',
   highlightTextColor: 'white',
   sections: [{
     title: "Current Tasks",
@@ -217,8 +217,8 @@ tasks.on('select', function(e) {
 
 var history = new UI.Menu({
   fullscreen: true,
-  textColor: '#0055AA',
-  highlightBackgroundColor: '#0055AA',
+  textColor: 'black',
+  highlightBackgroundColor: 'black',
   highlightTextColor: 'white',
   sections: [{
     title: 'Task History',
@@ -234,15 +234,15 @@ history.on('select', function(e) {
 });
 
 var main = new UI.Menu({
-  textColor: '#0055AA',
-  highlightBackgroundColor: '#0055AA',
+  textColor: 'black',
+  highlightBackgroundColor: 'black',
   highlightTextColor: 'white',
   sections: [{
     items: [
       {title: 'Add New Task', icon: 'images/plus.png'},
-      {title: 'Check Tasks'},
-      {title: 'Task List'},
-      {title: 'History'}
+      {title: 'Complete Tasks', icon: 'images/check.png'},
+      {title: 'Browse Tasks', icon: 'images/tasks.png'},
+      {title: 'Task History', icon: 'images/history.png'}
     ]
   }]
 });

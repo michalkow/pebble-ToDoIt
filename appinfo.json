@@ -45,11 +45,6 @@
                 "type": "bitmap"
             },
             {
-                "file": "images/remove-icon.png",
-                "name": "IMAGES_REMOVE_ICON_PNG",
-                "type": "bitmap"
-            },
-            {
                 "file": "images/cross.png",
                 "name": "IMAGES_CROSS_PNG",
                 "type": "bitmap"
@@ -57,6 +52,21 @@
             {
                 "file": "images/plus.png",
                 "name": "IMAGES_PLUS_PNG",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/check.png",
+                "name": "IMAGES_CHECK_PNG",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/history.png",
+                "name": "IMAGES_HISTORY_PNG",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/tasks.png",
+                "name": "IMAGES_TASKS_PNG",
                 "type": "bitmap"
             }
         ]
