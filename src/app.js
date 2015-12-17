@@ -31,7 +31,7 @@ var store = {
     if(!type) type = 'tasks';
     var value = pebbleStorage.getItem(type);
     var tasks = value ? JSON.parse(value) : [];
-    if(type=="history") tasks.unshift({title: "Clean History", icon: "images/remove.png"});
+    if(type=="history") tasks.unshift({title: "Clean History", icon: "images/remove-icon.png"});
     else tasks.unshift({title: "Add New Task", icon: "images/plus.png"});
     return tasks;
   },

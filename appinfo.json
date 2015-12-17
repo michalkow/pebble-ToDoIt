@@ -45,6 +45,11 @@
                 "type": "bitmap"
             },
             {
+                "file": "images/remove-icon.png",
+                "name": "IMAGES_REMOVE_ICON_PNG",
+                "type": "bitmap"
+            },
+            {
                 "file": "images/cross.png",
                 "name": "IMAGES_CROSS_PNG",
                 "type": "bitmap"
