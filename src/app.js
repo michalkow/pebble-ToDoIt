@@ -78,8 +78,9 @@ var setNextAlert = function() {
     if(nextDay == 6) nextDay = 0;
     else nextDay++; 
   }
+  console.log('wakeup', nextDay, nextHours);
   var nextTime = Clock.weekday(nextDay, nextHours, 0);
-  Wakeup.schedule({time: nextTime},
+  Wakeup.schedule({time: nextTime, data: {}},
     function(e) {
       if (e.failed) {
         // Log the error reason
