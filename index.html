@@ -59,7 +59,8 @@
 		if(query && query.evening) document.getElementById('evening').value = query.evening;
 		if(query && query.night) document.getElementById('night').value = query.night;
 
-		$('form').submit(function() {
+		$('form').submit(function(e) {
+			e.preventDefault();
 			var options = {
 				morning: document.getElementById('morning').value,
 				evening: document.getElementById('evening').value,
