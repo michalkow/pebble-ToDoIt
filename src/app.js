@@ -151,6 +151,43 @@ var setNextAlert = function() {
   );
 };
 
+var tasks = new UI.Menu({
+  fullscreen: true,
+  textColor: '#0055AA',
+  highlightBackgroundColor: '#0055AA',
+  highlightTextColor: 'white',
+  sections: [{
+    title: type,
+    items: store.getDisplayTasks('tasks')
+  }]
+});
+
+tasks.on('select', function(e) {
+  if(e.itemIndex == 0) {
+    voiceAdd(function() {
+      tasks.items(0, store.getDisplayTasks('tasks'));
+    });
+  } else displayCard('tasks', e.itemIndex-1, -1);
+});
+
+var history = new UI.Menu({
+  fullscreen: true,
+  textColor: '#0055AA',
+  highlightBackgroundColor: '#0055AA',
+  highlightTextColor: 'white',
+  sections: [{
+    title: type,
+    items: store.getDisplayTasks('history')
+  }]
+});
+
+history.on('select', function(e) {
+  if(e.itemIndex == 0) {
+    store.clearHistory();
+    history.items(0, store.getDisplayTasks('history'));
+  } else displayCard('history', e.itemIndex-1, -1);
+});
+
 var main = new UI.Menu({
   textColor: '#0055AA',
   highlightBackgroundColor: '#0055AA',
@@ -219,39 +256,14 @@ var displayCard = function(type, index, next) {
   card.show();
 };
 
-var displayTasks = function(type) {
-  var menu = new UI.Menu({
-    fullscreen: true,
-    textColor: '#0055AA',
-    highlightBackgroundColor: '#0055AA',
-    highlightTextColor: 'white',
-    sections: [{
-      title: type,
-      items: store.getDisplayTasks(type)
-    }]
-  });
-
-  menu.on('select', function(e) {
-    if(e.itemIndex == 0) {
-      if(type == "history") {
-        store.clearHistory();
-        menu.items(0, store.getDisplayTasks(type));
-      } else {
-        voiceAdd(function() {
-          menu.items(0, store.getDisplayTasks(type));
-        });
-      }
-    } else displayCard(type, e.itemIndex-1, -1);
-  });
-
-  menu.show();
-};
-
 main.on('select', function(e) {
-  if(e.itemIndex == 0) voiceAdd(function() { displayTasks('tasks') });
+  if(e.itemIndex == 0) voiceAdd(function() { 
+    tasks.items(0, store.getDisplayTasks('tasks')); 
+    tasks.show(); 
+  });
   else if(e.itemIndex == 1) displayCard('tasks', 0, 1);
-  else if(e.itemIndex == 2) displayTasks('tasks');
-  else if(e.itemIndex == 3) displayTasks('history');
+  else if(e.itemIndex == 2) tasks.show();
+  else if(e.itemIndex == 3) history.show();
 });
 
 main.show();
