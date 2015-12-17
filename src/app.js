@@ -83,12 +83,12 @@ var daysAgo = function(added) {
   if(diffDays<1) return "Added Today";
   else if(diffDays==1) return "Added Yesterday";
   else if(diffDays>1) return "Added "+diffDays+" ago";
-}
+};
 
 var validateTime = function(time) {
   if(time > 0 && time < 24) return true;
   else return false;
-}
+};
 
 var voiceAdd = function(callback) {
   Voice.dictate('start', false, function(e) {
@@ -100,7 +100,7 @@ var voiceAdd = function(callback) {
       if(callback) callback();
     }
   });
-}
+};
 
 var setNextAlert = function() {
   var morning = Settings.option('morning') ? Settings.option('morning') : 10;
@@ -252,8 +252,9 @@ main.on('select', function(e) {
     tasks.items(0, store.getDisplayTasks('tasks')); 
     tasks.show(); 
   });
-  else if(e.itemIndex == 1) if(store.getTasks('tasks').length > 0) displayCard('tasks', 0, 1);
-  else if(e.itemIndex == 2) tasks.show();
+  else if(e.itemIndex == 1) {
+    if(store.getTasks('tasks').length > 0) displayCard('tasks', 0, 1);
+  } else if(e.itemIndex == 2) tasks.show();
   else if(e.itemIndex == 3) history.show();
 });
 
@@ -288,4 +289,4 @@ Settings.config({
 
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
-}
+};
