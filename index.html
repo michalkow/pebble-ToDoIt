@@ -10,6 +10,7 @@
 			color: white; 
 			height: 50px; 
 			width: 100%;
+			margin-bottom: 20px;
 		}
 
 		.back {
@@ -46,31 +47,51 @@
 		<h4 class="title">ToDoIt Settings</h4>
 	</div>
 	<div class="container-fluid">
-		<div class="well help-block" style="margin-top: 20px;">
-		  Set up what times (0-23) during the day you want to be reminded about your tasks.
-		</div>
 		<form>
 			<div class="form-group">
 				<label class="control-label" for="morning">Morning</label>
 				<div class="row">
-					<div class="col-xs-9">
+					<div class="col-xs-8">
 						<input class="form-control" name="morning" id="morning" type="number" placeholder="10" />
 					</div>
-					<div class="col-xs-3">
+					<div class="col-xs-4">
 						<select class="form-control" name="morningTime" id="morningTime">
 							<option value="pm">PM</option>
+							<option value="am" selected>AM</option>
+						</select>
+					</div>
+				</div>
+				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
+			</div>
+			<div class="form-group">
+				<label class="control-label" for="evening">Evening</label>
+				<div class="row">
+					<div class="col-xs-8">
+						<input class="form-control" name="evening" id="evening" type="number" placeholder="5" />
+					</div>
+					<div class="col-xs-4">
+						<select class="form-control" name="eveningTime" id="eveningTime">
+							<option value="pm" selected>PM</option>
 							<option value="am">AM</option>
 						</select>
 					</div>
 				</div>
-			</div>
-			<div class="form-group">
-				<label class="control-label" for="evening">Evening</label>
-				<input class="form-control" name="evening" id="evening" type="number" placeholder="17" />
+				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
 			</div>
 			<div class="form-group">
 				<label class="control-label" for="night">Night</label>
-				<input class="form-control" name="night" id="night" type="number" placeholder="22" />
+				<div class="row">
+					<div class="col-xs-8">
+						<input class="form-control" name="night" id="night" type="number" placeholder="10" />
+					</div>
+					<div class="col-xs-4">
+						<select class="form-control" name="nightTime" id="nightTime">
+							<option value="pm" selected>PM</option>
+							<option value="am">AM</option>
+						</select>
+					</div>
+				</div>
+				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
 			</div>
 			<div class="form-group text-center">
 				<button class="btn btn-primary btn-lg" style="width: 100%;" type="submit">Save</button>
@@ -101,11 +122,21 @@
 		  return query_string;
 		};
 
-		var query = QueryString();
+		var setTimeField = function(field, value) {
+			if(value < 0) {
+				document.getElementById(field).disabled = true;
+				document.getElementById(field+"Time").disabled = true;
+			} else if(value > 0 && value < 24) {
+				document.getElementById(field).value = value;
+			}
+		}
 
-		if(query && query.morning) document.getElementById('morning').value = query.morning;
-		if(query && query.evening) document.getElementById('evening').value = query.evening;
-		if(query && query.night) document.getElementById('night').value = query.night;
+		var updateValues = function() {
+			var query = QueryString();
+			for (field in query) {
+				setTimeField(field, query[field]);
+			};
+		}
 
 		window.onsubmit = function(e) {
 			e.preventDefault();
@@ -114,9 +145,11 @@
 				evening: document.getElementById('evening').value,
 				night: document.getElementById('night').value
 			}
-			document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+			document.location.search = '?morning=' + (options.morning ? options.morning : "0") + "&evening=" + (options.evening ? options.evening : "0") + "&night=" + (options.night ? options.night : "0");
+			//document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
 		};
 
+		updateValues();
 	</script>
 </body>
 </html>
