@@ -86,14 +86,14 @@ var daysAgo = function(added) {
 };
 
 var validateTime = function(time) {
-  if(time > 0 && time < 24) return true;
+  if(time == -2) return true;
+  else if(time >= 0 && time < 24) return true;
   else return false;
 };
 
 var voiceAdd = function(callback) {
   var card = new UI.Card({
     title: "Add Task?",
-    body: "",
     fullscreen: true,
     backgroundColor: '#00AA55'
   });
@@ -130,6 +130,10 @@ var setNextAlert = function() {
   var morning = Settings.option('morning') ? Settings.option('morning') : 10;
   var evening = Settings.option('evening') ? Settings.option('evening') : 17;
   var night = Settings.option('night') ? Settings.option('night') : 22;
+  console.log("Alert Times:");
+  console.log(morning);
+  console.log(evening);
+  console.log(night);
   // Take date 10 min from now
   var now = new Date(new Date().getTime() + 10 * 60 * 1000);
   var day = now.getUTCDay();
