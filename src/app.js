@@ -223,7 +223,7 @@ var configuration = new UI.Card({
 var tasks = new UI.Menu({
   fullscreen: true,
   textColor: 'black',
-  highlightBackgroundColor: 'black',
+  highlightBackgroundColor: '#0055AA',
   highlightTextColor: 'white',
   sections: [{
     title: "Current Tasks",
@@ -242,7 +242,7 @@ tasks.on('select', function(e) {
 var history = new UI.Menu({
   fullscreen: true,
   textColor: 'black',
-  highlightBackgroundColor: 'black',
+  highlightBackgroundColor: '#AA00AA',
   highlightTextColor: 'white',
   sections: [{
     title: 'Task History',
@@ -259,7 +259,7 @@ history.on('select', function(e) {
 
 var main = new UI.Menu({
   textColor: 'black',
-  highlightBackgroundColor: 'black',
+  highlightBackgroundColor: '#FF5500',
   highlightTextColor: 'white',
   sections: [{
     items: [
