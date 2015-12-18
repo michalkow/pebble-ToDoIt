@@ -37,6 +37,16 @@
 			margin-left: 10px;
 			color: white;
 		}
+
+		input[disabled] {
+			color: #ddd;
+		}
+
+		select[disabled] {
+			color: #ddd;
+			box-shadow: none;
+			border-bottom: 1px dotted #ddd;
+		}
 	</style>
 </head>
 <body>
@@ -48,11 +58,11 @@
 	</div>
 	<div class="container-fluid">
 		<form>
-			<div class="form-group">
+			<div class="form-group" id="morningGroup">
 				<label class="control-label" for="morning">Morning</label>
 				<div class="row">
 					<div class="col-xs-8">
-						<input class="form-control" name="morning" id="morning" type="number" placeholder="10" />
+						<input class="form-control" name="morning" id="morning" type="number" />
 					</div>
 					<div class="col-xs-4">
 						<select class="form-control" name="morningTime" id="morningTime">
@@ -62,12 +72,17 @@
 					</div>
 				</div>
 				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
+				<div class="checkbox">
+          <label>
+            <input name="morningDisabled" id="morningDisabled" type="checkbox" /> Disable morning reminder
+          </label>
+        </div>
 			</div>
-			<div class="form-group">
+			<div class="form-group" id="eveningGroup">
 				<label class="control-label" for="evening">Evening</label>
 				<div class="row">
 					<div class="col-xs-8">
-						<input class="form-control" name="evening" id="evening" type="number" placeholder="5" />
+						<input class="form-control" name="evening" id="evening" type="number" />
 					</div>
 					<div class="col-xs-4">
 						<select class="form-control" name="eveningTime" id="eveningTime">
@@ -77,12 +92,17 @@
 					</div>
 				</div>
 				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
+				<div class="checkbox">
+          <label>
+            <input name="eveningDisabled" id="eveningDisabled" type="checkbox" /> Disable evening reminder
+          </label>
+        </div>
 			</div>
-			<div class="form-group">
+			<div class="form-group" id="nightGroup">
 				<label class="control-label" for="night">Night</label>
 				<div class="row">
 					<div class="col-xs-8">
-						<input class="form-control" name="night" id="night" type="number" placeholder="10" />
+						<input class="form-control" name="night" id="night" type="number" />
 					</div>
 					<div class="col-xs-4">
 						<select class="form-control" name="nightTime" id="nightTime">
@@ -92,6 +112,11 @@
 					</div>
 				</div>
 				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
+				<div class="checkbox">
+          <label>
+            <input name="nightDisabled" id="nightDisabled" type="checkbox" /> Disable night reminder
+          </label>
+        </div>
 			</div>
 			<div class="form-group text-center">
 				<button class="btn btn-primary btn-lg" style="width: 100%;" type="submit">Save</button>
@@ -99,6 +124,8 @@
 		</form>
 	</div>
 	<script type="text/javascript">
+		var fieldNames = ['morning', 'evening', 'night'];
+
 		var QueryString = function () {
 		  // This function is anonymous, is executed immediately and 
 		  // the return value is assigned to QueryString!
@@ -122,32 +149,101 @@
 		  return query_string;
 		};
 
+		var hourToAMPM = function(h) {
+			if(h < 0) return null;
+			else if(h == 0) return {v: 12, t: 'am'};
+			else if(h < 12) return {v: h, t: 'am'};
+			else if(h == 12) return {v: 12, t: 'pm'};
+			else if(h > 12) return {v: h-12, t: 'pm'};
+			else if(h > 23) return null;
+		}
+
+		var AMPMToHour= function(field) {
+			if(document.getElementById(field+"Disabled").checked) {
+				return -2;
+			} else if(document.getElementById(field).value < 1 || document.getElementById(field).value > 12) {
+				//invalid
+				return -1;
+			} else {
+				if(document.getElementById(field+"Time").value == "am") {
+					if(document.getElementById(field).value == 12) return 0;
+					else return document.getElementById(field).value;
+				} else {
+					return parseInt(document.getElementById(field).value) + 12;
+				}
+			}
+		}
+
+		var hasError = function(group) {
+			document.getElementById(group+'Group').className = document.getElementById(group+'Group').className + ' has-error';
+			document.getElementById(group+'Group').querySelector('.help-block').style.display = "block";
+		}
+
 		var setTimeField = function(field, value) {
-			if(value < 0) {
+			if(!value && value != 0) {
+				if(field == "morning") {
+					document.getElementById(field).value = 11;
+					document.getElementById(field+"Time").value = 'am';
+				} else if(field == "evening") {
+					document.getElementById(field).value = 7;
+					document.getElementById(field+"Time").value = 'pm';
+				} else if(field == "night") {
+					document.getElementById(field).value = 10;
+					document.getElementById(field+"Time").value = 'pm';
+				}
+			} else if(value < 0) {
 				document.getElementById(field).disabled = true;
 				document.getElementById(field+"Time").disabled = true;
-			} else if(value > 0 && value < 24) {
-				document.getElementById(field).value = value;
+				document.getElementById(field+"Disabled").checked = true;
+			} else if(value < 24) {
+				var time = hourToAMPM(value);
+				document.getElementById(field).value = time.v;
+				document.getElementById(field+"Time").value = time.t;
 			}
 		}
 
 		var updateValues = function() {
 			var query = QueryString();
-			for (field in query) {
-				setTimeField(field, query[field]);
+			for (var i = 0; i < fieldNames.length; i++) {
+				setTimeField(fieldNames[i], query[fieldNames[i]]);
 			};
 		}
 
 		window.onsubmit = function(e) {
 			e.preventDefault();
+			var err = false;
 			var options = {
-				morning: document.getElementById('morning').value,
-				evening: document.getElementById('evening').value,
-				night: document.getElementById('night').value
+				morning: AMPMToHour('morning'),
+				evening: AMPMToHour('evening'),
+				night: AMPMToHour('night')
 			}
-			document.location.search = '?morning=' + (options.morning ? options.morning : "0") + "&evening=" + (options.evening ? options.evening : "0") + "&night=" + (options.night ? options.night : "0");
-			//document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+			for (name in options) {
+				if(options[name] == -1) {
+					hasError(name);
+					err = true;
+				}
+			};
+			if(!err) {
+				document.location.search = '?morning=' + options.morning + "&evening=" + options.evening + "&night=" + options.night;
+				document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+			}
 		};
+
+		for (var i = 0; i < fieldNames.length; i++) {
+			var checked = function (fieldName) {
+				document.getElementById(fieldName+"Disabled").onchange = function(e) {
+					if(e.target.checked) {
+						document.getElementById(fieldName).disabled = true;
+						document.getElementById(fieldName+"Time").disabled = true;
+					} else {
+						document.getElementById(fieldName).disabled = false;
+						document.getElementById(fieldName+"Time").disabled = false;
+					};
+				}
+			};
+			checked(fieldNames[i]);
+		};
+
 
 		updateValues();
 	</script>
