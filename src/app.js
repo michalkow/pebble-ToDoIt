@@ -127,39 +127,46 @@ var voiceAdd = function(callback) {
 };
 
 var setNextAlert = function() {
-  var morning = Settings.option('morning') ? Settings.option('morning') : 10;
-  var evening = Settings.option('evening') ? Settings.option('evening') : 17;
-  var night = Settings.option('night') ? Settings.option('night') : 22;
+  var reminders = [];
+  if(Settings.option('morning') && Settings.option('morning') >= 0) reminders.push(Settings.option('morning'));
+  if(Settings.option('evening') && Settings.option('evening') >= 0) reminders.push(Settings.option('evening'));
+  if(Settings.option('night') && Settings.option('night') >= 0) reminders.push(Settings.option('night'));
   console.log("Alert Times:");
   console.log(morning);
   console.log(evening);
   console.log(night);
-  // Take date 10 min from now
-  var now = new Date(new Date().getTime() + 10 * 60 * 1000);
-  var day = now.getUTCDay();
-  var hours = now.getHours();
-  var nextDay = day;
-  var nextHours = morning;
-  if(hours < morning) nextHours = morning;
-  else if(hours < evening) nextHours = evening;
-  else if(hours < night) nextHours = night;
-  else if(hours > night) {
-    nextHours = morning;
-    if(nextDay == 6) nextDay = 0;
-    else nextDay++; 
-  }
-  console.log('wakeup ' + nextDay + ' ' + nextHours);
-  var nextTime = Clock.weekday(nextDay, nextHours, 0);
-  Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
-    function(e) {
-      if (e.failed) {
-        // Log the error reason
-        console.log('Wakeup set failed: ' + e.error);
-      } else {
-        store.setAlert(nextTime);
+  if(reminders.length>0) {
+    reminders.sort();
+    // Take date 10 min from now
+    var now = new Date(new Date().getTime() + 10 * 60 * 1000);
+    var day = now.getUTCDay();
+    var hours = now.getHours();
+    var nextHours = null;
+    var nextDay = day;
+    for (var i = 0; i < reminders.length; i++) {
+      if(hours < reminders[i]) {
+        nextHours = reminders[i];
+        break;
       }
+    };
+    if(nextHours===null) {
+      if(nextDay == 6) nextDay = 0;
+      else nextDay++; 
+      nextHours = reminders[0];
     }
-  );
+    console.log('wakeup ' + nextDay + ' ' + nextHours);
+    var nextTime = Clock.weekday(nextDay, nextHours, 0);
+    Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
+      function(e) {
+        if (e.failed) {
+          // Log the error reason
+          console.log('Wakeup set failed: ' + e.error);
+        } else {
+          store.setAlert(nextTime);
+        }
+      }
+    );
+  }
 };
 
 var displayCard = function(type, index, next, wakeup) {
@@ -322,4 +329,4 @@ Settings.config({
 
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
-};
+}
