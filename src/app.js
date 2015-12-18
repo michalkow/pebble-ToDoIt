@@ -158,7 +158,7 @@ var setNextAlert = function() {
   );
 };
 
-var displayCard = function(type, index, next) {
+var displayCard = function(type, index, next, wakeup) {
   var task = store.getTask(type, index);
   var card = new UI.Card({
     title: task.title,
@@ -192,7 +192,8 @@ var displayCard = function(type, index, next) {
       history.items(0, store.getDisplayTasks('history'));
       if(next>=0) next--;
       if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
-      else main.hide();
+      else if(wakeup) main.hide();
+      else main.show();
       card.hide();
     }
   });
@@ -205,7 +206,8 @@ var displayCard = function(type, index, next) {
       card.hide();   
     } else {
       if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
-      else main.hide();
+      else if(wakeup) main.hide();
+      else main.show();
       card.hide();
     }
   });
@@ -286,7 +288,7 @@ main.show();
 
 Wakeup.on('wakeup', function(e) {
   if(store.getTasks('tasks').length > 0) {
-    displayCard('tasks', 0, 1);
+    displayCard('tasks', 0, 1, true);
     Light.trigger();
     Vibe.vibrate('short');
   }
