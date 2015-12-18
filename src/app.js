@@ -192,7 +192,7 @@ var displayCard = function(type, index, next) {
       history.items(0, store.getDisplayTasks('history'));
       if(next>=0) next--;
       if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
-      else main.show();
+      else main.hide();
       card.hide();
     }
   });
@@ -205,7 +205,7 @@ var displayCard = function(type, index, next) {
       card.hide();   
     } else {
       if(next>=0 && next < store.getTasks('tasks').length) displayCard(type, next, next+1);
-      else main.show();
+      else main.hide();
       card.hide();
     }
   });
