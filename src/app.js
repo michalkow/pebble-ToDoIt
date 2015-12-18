@@ -104,10 +104,8 @@ var voiceAdd = function(callback) {
   });
   
   card.on('click', 'up', function() {
-    console.log(JSON.stringify(card));
-    console.log(JSON.stringify(card.body));
-    console.log(JSON.stringify(card.body()));
     store.addTask(card.body());
+    if(callback) callback();
     card.hide();
   });
 
