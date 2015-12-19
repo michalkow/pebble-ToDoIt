@@ -13,6 +13,7 @@ var Light = require('ui/light');
 var Settings = require('settings');
 
 if(Pebble.getActiveWatchInfo) { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
+    console.log(JSON.stringify(Pebble));
     var colors = {
       green: '#00AA55',
       lblue: '#00AAFF',
@@ -138,9 +139,11 @@ var voiceAdd = function(callback) {
   Voice.dictate('start', false, function(e) {
     if (e.err) {
       console.log('Error: ' + e.err);
+      card.hide();
       return;
     } else {
       card.body(e.transcription);
+      card.backgroundColor(colors.green);
     }
   });
 };
