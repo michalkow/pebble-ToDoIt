@@ -9,14 +9,39 @@
     "resources": {
         "media": [
             {
+                "file": "images/menu_icon.png",
+                "name": "IMAGE_MENU_ICON",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/logo_splash.png",
+                "name": "IMAGE_LOGO_SPLASH",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/tile_splash.png",
+                "name": "IMAGE_TILE_SPLASH",
+                "type": "bitmap"
+            },
+            {
+                "file": "fonts/UbuntuMono-Regular.ttf",
+                "name": "MONO_FONT_14",
+                "type": "font"
+            },
+            {
                 "file": "images/icon.png",
                 "menuIcon": true,
-                "name": "IMAGE_MENU_ICON",
+                "name": "IMAGES_ICON_PNG",
                 "type": "bitmap"
             },
             {
                 "file": "images/tick.png",
                 "name": "IMAGES_TICK_PNG",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/tasks.png",
+                "name": "IMAGES_TASKS_PNG",
                 "type": "bitmap"
             },
             {
@@ -30,18 +55,8 @@
                 "type": "bitmap"
             },
             {
-                "file": "images/cross.png",
-                "name": "IMAGES_CROSS_PNG",
-                "type": "bitmap"
-            },
-            {
                 "file": "images/plus.png",
                 "name": "IMAGES_PLUS_PNG",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/check.png",
-                "name": "IMAGES_CHECK_PNG",
                 "type": "bitmap"
             },
             {
@@ -50,8 +65,13 @@
                 "type": "bitmap"
             },
             {
-                "file": "images/tasks.png",
-                "name": "IMAGES_TASKS_PNG",
+                "file": "images/cross.png",
+                "name": "IMAGES_CROSS_PNG",
+                "type": "bitmap"
+            },
+            {
+                "file": "images/check.png",
+                "name": "IMAGES_CHECK_PNG",
                 "type": "bitmap"
             }
         ]
