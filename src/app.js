@@ -11,8 +11,9 @@ var Wakeup = require('wakeup');
 var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 var Settings = require('settings');
+var Platform = require('platform');
 
-if(Pebble.getActiveWatchInfo) { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
+if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
     console.log(JSON.stringify(Pebble));
     var colors = {
       green: '#00AA55',
