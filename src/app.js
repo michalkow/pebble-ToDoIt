@@ -12,6 +12,25 @@ var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 var Settings = require('settings');
 
+if(Pebble.getActiveWatchInfo) { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
+    var colors = {
+      green: '#00AA55',
+      lblue: '#00AAFF',
+      dblue: '#0055AA',
+      orange: '#FF5500',
+      purple: '#AA00AA',
+    }
+} else {
+    // This is the Aplite platform, getActiveWatchinfo is unavaliable in SDK versions < 3.0
+    var colors = {
+      green: 'white',
+      lblue: 'white',
+      dblue: 'black',
+      orange: 'black',
+      purple: 'black',
+    }
+}
+
 var pebbleStorage = window.localStorage || localStorage;
 var store = {
   getNextAlert: function() {
@@ -95,7 +114,7 @@ var voiceAdd = function(callback) {
   var card = new UI.Card({
     title: "Add Task?",
     fullscreen: true,
-    backgroundColor: '#00AA55'
+    backgroundColor: colors.green
   });
 
   card.action({
@@ -128,9 +147,15 @@ var voiceAdd = function(callback) {
 
 var setNextAlert = function() {
   var reminders = [];
-  if(Settings.option('morning') && Settings.option('morning') >= 0) reminders.push(Settings.option('morning'));
-  if(Settings.option('evening') && Settings.option('evening') >= 0) reminders.push(Settings.option('evening'));
-  if(Settings.option('night') && Settings.option('night') >= 0) reminders.push(Settings.option('night'));
+  if(Settings.option('morning')) { 
+    if(Settings.option('morning') >= 0) reminders.push(Settings.option('morning')); 
+  } else reminders.push(11);
+  if(Settings.option('evening')) { 
+    if(Settings.option('evening') >= 0) reminders.push(Settings.option('evening')); 
+  } else reminders.push(17);
+  if(Settings.option('night')) { 
+    if(Settings.option('night') >= 0) reminders.push(Settings.option('night')); 
+  } else reminders.push(21);
   console.log("Alert Times:");
   console.log(JSON.stringify(reminders));
   if(reminders.length>0) {
@@ -173,7 +198,7 @@ var displayCard = function(type, index, next, wakeup) {
     title: task.title,
     body: daysAgo(task.added),
     fullscreen: true,
-    backgroundColor: '#00AAFF'
+    backgroundColor: colors.lblue
   });
 
   if(type == "history") {
@@ -228,13 +253,13 @@ var configuration = new UI.Card({
   title: "ToDoIt configuration is open",
   body: "Check your phone for configuration options",
   fullscreen: true,
-  backgroundColor: '#00AAFF'
+  backgroundColor: colors.lblue
 });
 
 var tasks = new UI.Menu({
   fullscreen: true,
   textColor: 'black',
-  highlightBackgroundColor: '#0055AA',
+  highlightBackgroundColor: colors.dblue,
   highlightTextColor: 'white',
   sections: [{
     title: "Current Tasks",
@@ -253,7 +278,7 @@ tasks.on('select', function(e) {
 var history = new UI.Menu({
   fullscreen: true,
   textColor: 'black',
-  highlightBackgroundColor: '#AA00AA',
+  highlightBackgroundColor: colors.purple,
   highlightTextColor: 'white',
   sections: [{
     title: 'Task History',
@@ -270,7 +295,7 @@ history.on('select', function(e) {
 
 var main = new UI.Menu({
   textColor: 'black',
-  highlightBackgroundColor: '#FF5500',
+  highlightBackgroundColor: colors.orange,
   highlightTextColor: 'white',
   sections: [{
     items: [
@@ -305,7 +330,7 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night'),
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+(Settings.option('morning') ? Settings.option('morning') : 11)+'&evening='+(Settings.option('evening') ? Settings.option('evening') : 17)+'&night='+(Settings.option('night') ? Settings.option('night') : 21),
     autoSave: false
   },
   function(e) {
@@ -315,9 +340,9 @@ Settings.config({
   function(e) {
     if(e.options) {
       console.log(JSON.stringify(e.options));
-      if(e.options.morning && validateTime(e.options.morning)) Settings.option('morning', e.options.morning);
-      if(e.options.evening && validateTime(e.options.evening)) Settings.option('evening', e.options.evening);
-      if(e.options.night && validateTime(e.options.night)) Settings.option('night', e.options.night);
+      if(e.options.morning && validateTime(e.options.morning)) Settings.option('morning', parseInt(e.options.morning));
+      if(e.options.evening && validateTime(e.options.evening)) Settings.option('evening', parseInt(e.options.evening));
+      if(e.options.night && validateTime(e.options.night)) Settings.option('night', parseInt(e.options.night));
       Wakeup.cancel('all');
       setNextAlert();
     }
