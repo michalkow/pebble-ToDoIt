@@ -132,9 +132,7 @@ var setNextAlert = function() {
   if(Settings.option('evening') && Settings.option('evening') >= 0) reminders.push(Settings.option('evening'));
   if(Settings.option('night') && Settings.option('night') >= 0) reminders.push(Settings.option('night'));
   console.log("Alert Times:");
-  console.log(morning);
-  console.log(evening);
-  console.log(night);
+  console.log(JSON.stringify(reminders));
   if(reminders.length>0) {
     reminders.sort();
     // Take date 10 min from now
@@ -148,7 +146,7 @@ var setNextAlert = function() {
         nextHours = reminders[i];
         break;
       }
-    };
+    }
     if(nextHours===null) {
       if(nextDay == 6) nextDay = 0;
       else nextDay++; 
