@@ -1,7 +1,7 @@
 /**
- * Welcome to Pebble.js!
+ * ToDoIt in Pebble.js
  *
- * This is where you write your app.
+ * By Michal Kowalkowski (kowalkowski.michal@gmail.com)
  */
 
 var UI = require('ui');
