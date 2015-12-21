@@ -376,3 +376,20 @@ Settings.config({
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
 }
+
+var convert = function(text){
+    var result = "";
+    var vals = [];
+    for(var i = 0; i < text.length; i++){
+        vals.push(text.charCodeAt(i));
+    }
+    for (var i = 0; i < vals.length; i++) {
+      result+=String.fromCharCode(vals[i]);
+    };
+    return result;
+};
+
+store.addTask(convert('корпоратив'));
+store.addTask(convert('как'));
+store.addTask(convert('пойдёте'));
+tasks.items(0, store.getDisplayTasks('tasks'));
