@@ -113,53 +113,64 @@ var validateTime = function(time) {
 };
 
 var voiceAdd = function(callback) {
-  var card = new UI.Card({
-    title: "Add Task?",
-    fullscreen: true,
-    backgroundColor: colors.green
-  });
+  if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') {
+    var card = new UI.Card({
+      title: "Add Task?",
+      fullscreen: true,
+      backgroundColor: colors.green
+    });
 
-  card.action({
-    up: 'images/tick.png',
-    down: 'images/cross.png'
-  });
-  
-  card.on('click', 'up', function() {
-    store.addTask(card.body());
-    if(callback) callback();
-    card.hide();
-  });
-
-  card.on('click', 'down', function() {
-    voiceAdd(callback);
-    card.hide();
-  });
-
-  card.show();
-
-  Voice.dictate('start', false, function(e) {
-    if (e.err) {
-      console.log('Error: ' + e.err);
+    card.action({
+      up: 'images/tick.png',
+      down: 'images/cross.png'
+    });
+    
+    card.on('click', 'up', function() {
+      store.addTask(card.body());
+      if(callback) callback();
       card.hide();
-      return;
-    } else {
-      card.body(e.transcription);
-      card.backgroundColor(colors.green);
-    }
-  });
+    });
+
+    card.on('click', 'down', function() {
+      voiceAdd(callback);
+      card.hide();
+    });
+
+    card.show();
+
+    Voice.dictate('start', false, function(e) {
+      if (e.err) {
+        console.log('Error: ' + e.err);
+        card.hide();
+        return;
+      } else {
+        card.body(e.transcription);
+        card.backgroundColor(colors.green);
+      }
+    });
+  } else {
+    var card = new UI.Card({
+      title: "No Microphone",
+      body: "You will have to add new tasks via app configuration in your phone",
+      fullscreen: true,
+      backgroundColor: 'white'
+    });
+
+    card.action({
+      select: 'images/tick.png',
+    });
+    
+    card.on('click', 'select', function() {
+      card.hide();
+    });
+  }
 };
 
 var setNextAlert = function() {
   var reminders = [];
-  if(Settings.option('morning')) { 
-    if(Settings.option('morning') >= 0) reminders.push(Settings.option('morning')); 
-  } else reminders.push(11);
-  if(Settings.option('evening')) { 
-    if(Settings.option('evening') >= 0) reminders.push(Settings.option('evening')); 
-  } else reminders.push(17);
-  if(Settings.option('night')) { 
-    if(Settings.option('night') >= 0) reminders.push(Settings.option('night')); 
-  } else reminders.push(21);
+  if(Settings.option('reminders')) { 
+    reminders = JSON.parse(Settings.option('reminders'));
+  } else reminders = [11,17,21];
   console.log("Alert Times:");
   console.log(JSON.stringify(reminders));
   if(reminders.length>0) {
@@ -183,6 +194,7 @@ var setNextAlert = function() {
     }
     console.log('wakeup ' + nextDay + ' ' + nextHours);
     var nextTime = Clock.weekday(nextDay, nextHours, 0);
+    Wakeup.cancel('all');
     Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
       function(e) {
         if (e.failed) {
@@ -334,20 +346,23 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/?morning='+(Settings.option('morning') ? Settings.option('morning') : 11)+'&evening='+(Settings.option('evening') ? Settings.option('evening') : 17)+'&night='+(Settings.option('night') ? Settings.option('night') : 21),
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"),
     autoSave: false
   },
   function(e) {
-    console.log('http://michalkow.github.io/pebble-ToDoIt/?morning='+Settings.option('morning')+'&evening='+Settings.option('evening')+'&night='+Settings.option('night'));
+    console.log('http://michalkow.github.io/pebble-ToDoIt/?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"));
     configuration.show();
   },
   function(e) {
     if(e.options) {
       console.log(JSON.stringify(e.options));
-      if(e.options.morning && validateTime(e.options.morning)) Settings.option('morning', parseInt(e.options.morning));
-      if(e.options.evening && validateTime(e.options.evening)) Settings.option('evening', parseInt(e.options.evening));
-      if(e.options.night && validateTime(e.options.night)) Settings.option('night', parseInt(e.options.night));
-      Wakeup.cancel('all');
+      if(e.options.reminders) Settings.option('reminders', JSON.stringify(e.options.reminders));
+      if(e.options.tasks) {
+        for (var i = 0; i < e.options.tasks.length; i++) {
+          addTask(e.options.tasks[i]);
+        };
+        tasks.items(0, store.getDisplayTasks('tasks'));
+      }
       setNextAlert();
     }
     configuration.hide();
