@@ -150,8 +150,8 @@ var voiceAdd = function(callback) {
     });
   } else {
     var card = new UI.Card({
-      title: "No Microphone",
-      body: "You will have to add new tasks via app configuration in your phone",
+      title: "No Mic",
+      body: "Sorry, you will have to add new tasks via app configuration in your phone",
       fullscreen: true,
       backgroundColor: 'white'
     });
@@ -348,7 +348,7 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"),
+    url: 'http://todoit.neocities.org/index.html?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"),
     autoSave: false
   },
   function(e) {
