@@ -163,6 +163,8 @@ var voiceAdd = function(callback) {
     card.on('click', 'select', function() {
       card.hide();
     });
+
+    card.show();
   }
 };
 
@@ -375,8 +377,8 @@ if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
 
 
 //cyrrilic testing
-store.addTask('Исчерпывающая');
-store.addTask('информация');
-store.addTask('актуальная');
-store.addTask('собранная');
+store.addTask(unescape(encodeURI('Исчерпывающая')));
+store.addTask(unescape(encodeURI('информация')));
+store.addTask(unescape(encodeURI('актуальная')));
+store.addTask(unescape(encodeURI('собранная')));
 tasks.items(0, store.getDisplayTasks('tasks'));
