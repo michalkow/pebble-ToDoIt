@@ -359,7 +359,7 @@ Settings.config({
       if(e.options.reminders) Settings.option('reminders', JSON.stringify(e.options.reminders));
       if(e.options.tasks) {
         for (var i = 0; i < e.options.tasks.length; i++) {
-          addTask(e.options.tasks[i]);
+          store.addTask(e.options.tasks[i]);
         };
         tasks.items(0, store.getDisplayTasks('tasks'));
       }
@@ -372,3 +372,11 @@ Settings.config({
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
 }
+
+
+//cyrrilic testing
+store.addTask('Исчерпывающая');
+store.addTask('информация');
+store.addTask('актуальная');
+store.addTask('собранная');
+tasks.items(0, store.getDisplayTasks('tasks'));
