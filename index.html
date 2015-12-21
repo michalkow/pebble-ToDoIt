@@ -93,6 +93,8 @@
 		</form>
 	</div>
 	<script type="text/javascript">
+		var fieldNames = ['morning', 'evening', 'night'];
+
 		var QueryString = function () {
 		  // This function is anonymous, is executed immediately and 
 		  // the return value is assigned to QueryString!
@@ -116,19 +118,63 @@
 		  return query_string;
 		};
 
+		var hourToAMPM = function(h) {
+			if(h < 0) return null;
+			else if(h == 0) return {v: 12, t: 'am'};
+			else if(h < 12) return {v: h, t: 'am'};
+			else if(h == 12) return {v: 12, t: 'pm'};
+			else if(h > 12) return {v: h-12, t: 'pm'};
+			else if(h > 23) return null;
+		}
+
+		var AMPMToHour= function(field) {
+			if(document.getElementById(field+"Disabled").checked) {
+				return -2;
+			} else if(document.getElementById(field).value < 1 || document.getElementById(field).value > 12) {
+				//invalid
+				return -1;
+			} else {
+				if(document.getElementById(field+"Time").value == "am") {
+					if(document.getElementById(field).value == 12) return 0;
+					else return document.getElementById(field).value;
+				} else {
+					return parseInt(document.getElementById(field).value) + 12;
+				}
+			}
+		}
+
+		var hasError = function(group) {
+			document.getElementById(group+'Group').className = document.getElementById(group+'Group').className + ' has-error';
+			document.getElementById(group+'Group').querySelector('.help-block').style.display = "block";
+		}
+
 		var setTimeField = function(field, value) {
-			if(value < 0) {
+			if(!value && value != 0) {
+				if(field == "morning") {
+					document.getElementById(field).value = 11;
+					document.getElementById(field+"Time").value = 'am';
+				} else if(field == "evening") {
+					document.getElementById(field).value = 7;
+					document.getElementById(field+"Time").value = 'pm';
+				} else if(field == "night") {
+					document.getElementById(field).value = 10;
+					document.getElementById(field+"Time").value = 'pm';
+				}
+			} else if(value < 0) {
 				document.getElementById(field).disabled = true;
 				document.getElementById(field+"Time").disabled = true;
-			} else if(value > 0 && value < 24) {
-				document.getElementById(field).value = value;
+				document.getElementById(field+"Disabled").checked = true;
+			} else if(value < 24) {
+				var time = hourToAMPM(value);
+				document.getElementById(field).value = time.v;
+				document.getElementById(field+"Time").value = time.t;
 			}
 		}
 
 		var updateValues = function() {
 			var query = QueryString();
-			for (field in query) {
-				setTimeField(field, query[field]);
+			for (var i = 0; i < fieldNames.length; i++) {
+				setTimeField(fieldNames[i], query[fieldNames[i]]);
 			};
 		}
 
@@ -143,27 +189,19 @@
 			};
 		}
 
-
-		document.getElementById("addTask").onclick = function(e) {
-			e.preventDefault();
-			var div = document.createElement("div");
-			div.className = 'form-group';
-			div.innerHTML = '<input class="form-control" name="task" type="text" placeholder="My New Task" />';
-			document.getElementById('Tasks').appendChild(div);
-		}		
-
-		document.getElementById("addReminder").onclick = function(e) {
-			e.preventDefault();
+		var newReminder = function(time) {
+			var ampm = null;
+			if(time) ampm = hourToAMPM(time);
 			var div = document.createElement("div");
 			div.className = 'form-group';
 			div.innerHTML = '<div class="row"> \
 						<div class="col-xs-6"> \
-							<input class="form-control" name="reminder" type="number" placeholder="10" /> \
+							<input class="form-control" name="reminder"'+(ampm ? ' value="'+ampm.v+'"' : '')+' type="number" placeholder="10" /> \
 						</div> \
 						<div class="col-xs-4"> \
 							<select class="form-control" name="reminderTime"> \
-								<option value="pm">PM</option> \
-								<option value="am">AM</option> \
+								<option value="pm"'+(ampm ? (ampm.t=="pm" ? ' selected' : '') : '')+'>PM</option> \
+								<option value="am"'+(ampm ? (ampm.t=="am" ? ' selected' : '') : '')+'>AM</option> \
 							</select> \
 						</div> \
 						<div class="col-xs-2"> \
@@ -175,12 +213,37 @@
 			setOnClickEvents();
 		}
 
+
+		document.getElementById("addTask").onclick = function(e) {
+			e.preventDefault();
+			var div = document.createElement("div");
+			div.className = 'form-group';
+			div.innerHTML = '<input class="form-control" name="task" type="text" placeholder="My New Task" />';
+			document.getElementById('Tasks').appendChild(div);
+		}		
+
+		document.getElementById("addReminder").onclick = function(e) {
+			e.preventDefault();
+			newReminder();
+		}
+
 		window.onsubmit = function(e) {
 			e.preventDefault();
+			var err = false;
 			var options = {
-				morning: document.getElementById('morning').value,
-				evening: document.getElementById('evening').value,
-				night: document.getElementById('night').value
+				morning: AMPMToHour('morning'),
+				evening: AMPMToHour('evening'),
+				night: AMPMToHour('night')
+			}
+			for (name in options) {
+				if(options[name] == -1) {
+					hasError(name);
+					err = true;
+				}
+			};
+			if(!err) {
+				document.location.search = '?morning=' + options.morning + "&evening=" + options.evening + "&night=" + options.night;
+				document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
 			}
 			var tasks = document.getElementById('Tasks').querySelectorAll('.form-group input');
 			var newTasks = [];
