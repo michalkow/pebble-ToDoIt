@@ -120,7 +120,8 @@
 					if(el.querySelector('input[name="reminder"]').value == 12) return 0;
 					else return parseInt(el.querySelector('input[name="reminder"]').value);
 				} else {
-					return parseInt(el.querySelector('input[name="reminder"]').value) + 12;
+					if(el.querySelector('input[name="reminder"]').value == 12) return 12;
+					else return parseInt(el.querySelector('input[name="reminder"]').value) + 12;
 				}
 			}
 		}
@@ -237,9 +238,11 @@
 				tasks: newTasks
 			}
 			if(!err) {
-				console.log('?reminders=' + JSON.stringify(newReminders));
-				document.location.search = '?reminders=' + JSON.stringify(newReminders);
-				document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+				var strRem = JSON.stringify(newReminders);
+				document.location.search = '?reminders=' + strRem;
+				setTimeout(function() {
+					document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+				}, 100);
 			}
 		};
 
