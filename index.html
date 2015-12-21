@@ -10,7 +10,10 @@
 			color: white; 
 			height: 50px; 
 			width: 100%;
-			margin-bottom: 20px;
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 400;
 		}
 
 		.back {
@@ -38,14 +41,8 @@
 			color: white;
 		}
 
-		input[disabled] {
-			color: #ddd;
-		}
-
-		select[disabled] {
-			color: #ddd;
-			box-shadow: none;
-			border-bottom: 1px dotted #ddd;
+		.main {
+			padding-top: 70px;
 		}
 	</style>
 </head>
@@ -56,67 +53,23 @@
 		</a>
 		<h4 class="title">ToDoIt Settings</h4>
 	</div>
-	<div class="container-fluid">
+	<div class="container-fluid main">
 		<form>
-			<div class="form-group" id="morningGroup">
-				<label class="control-label" for="morning">Morning</label>
-				<div class="row">
-					<div class="col-xs-8">
-						<input class="form-control" name="morning" id="morning" type="number" />
-					</div>
-					<div class="col-xs-4">
-						<select class="form-control" name="morningTime" id="morningTime">
-							<option value="pm">PM</option>
-							<option value="am" selected>AM</option>
-						</select>
-					</div>
+			<legend>Tasks</legend>
+			<div id="Tasks">
+				<div class="form-group">
+					<input class="form-control" name="task" type="text" placeholder="My New Task" />
 				</div>
-				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
-				<div class="checkbox">
-          <label>
-            <input name="morningDisabled" id="morningDisabled" type="checkbox" /> Disable morning reminder
-          </label>
-        </div>
 			</div>
-			<div class="form-group" id="eveningGroup">
-				<label class="control-label" for="evening">Evening</label>
-				<div class="row">
-					<div class="col-xs-8">
-						<input class="form-control" name="evening" id="evening" type="number" />
-					</div>
-					<div class="col-xs-4">
-						<select class="form-control" name="eveningTime" id="eveningTime">
-							<option value="pm" selected>PM</option>
-							<option value="am">AM</option>
-						</select>
-					</div>
-				</div>
-				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
-				<div class="checkbox">
-          <label>
-            <input name="eveningDisabled" id="eveningDisabled" type="checkbox" /> Disable evening reminder
-          </label>
-        </div>
+			<div class="form-group">
+				<button type="button" id="addTask" class="btn btn-info">+ Add Another Task</button>
 			</div>
-			<div class="form-group" id="nightGroup">
-				<label class="control-label" for="night">Night</label>
-				<div class="row">
-					<div class="col-xs-8">
-						<input class="form-control" name="night" id="night" type="number" />
-					</div>
-					<div class="col-xs-4">
-						<select class="form-control" name="nightTime" id="nightTime">
-							<option value="pm" selected>PM</option>
-							<option value="am">AM</option>
-						</select>
-					</div>
-				</div>
-				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
-				<div class="checkbox">
-          <label>
-            <input name="nightDisabled" id="nightDisabled" type="checkbox" /> Disable night reminder
-          </label>
-        </div>
+			<legend>Reminders</legend>
+			<div id="Reminders">
+				
+			</div>
+			<div class="form-group">
+				<button type="button" id="addReminder" class="btn btn-info">+ Add Another Reminder</button>
 			</div>
 			<div class="form-group text-center">
 				<button class="btn btn-primary btn-lg" style="width: 100%;" type="submit">Save</button>
@@ -158,25 +111,24 @@
 			else if(h > 23) return null;
 		}
 
-		var AMPMToHour= function(field) {
-			if(document.getElementById(field+"Disabled").checked) {
-				return -2;
-			} else if(document.getElementById(field).value < 1 || document.getElementById(field).value > 12) {
+		var AMPMToHour= function(el) {
+			if(el.querySelector('input[name="reminder"]').value < 1 || el.querySelector('input[name="reminder"]').value > 12) {
 				//invalid
 				return -1;
 			} else {
-				if(document.getElementById(field+"Time").value == "am") {
-					if(document.getElementById(field).value == 12) return 0;
-					else return document.getElementById(field).value;
+				if(el.querySelector('select[name="reminderTime"]').value == "am") {
+					if(el.querySelector('input[name="reminder"]').value == 12) return 0;
+					else return parseInt(el.querySelector('input[name="reminder"]').value);
 				} else {
-					return parseInt(document.getElementById(field).value) + 12;
+					if(el.querySelector('input[name="reminder"]').value == 12) return 12;
+					else return parseInt(el.querySelector('input[name="reminder"]').value) + 12;
 				}
 			}
 		}
 
-		var hasError = function(group) {
-			document.getElementById(group+'Group').className = document.getElementById(group+'Group').className + ' has-error';
-			document.getElementById(group+'Group').querySelector('.help-block').style.display = "block";
+		var hasError = function(el) {
+			el.className = el.className + ' has-error';
+			el.querySelector('.help-block').style.display = "block";
 		}
 
 		var setTimeField = function(field, value) {
@@ -204,46 +156,95 @@
 
 		var updateValues = function() {
 			var query = QueryString();
-			for (var i = 0; i < fieldNames.length; i++) {
-				setTimeField(fieldNames[i], query[fieldNames[i]]);
+			if(query.reminders) {
+				var reminders = JSON.parse(query.reminders);
+				reminders.sort(function(a, b) {
+					return a - b;
+				});
+				for (var i = 0; i < reminders.length; i++) {
+					newReminder(reminders[i]);
+				}
+			}
+		}
+
+		var setOnClickEvents = function() {
+			var remindersBtn = document.getElementById('Reminders').querySelectorAll('.form-group .removeReminder');
+			for (var i = 0; i < remindersBtn.length; i++) {
+				remindersBtn[i].onclick = function(e) {
+					e.preventDefault();
+					remNode = e.target.parentNode.parentNode.parentNode;
+					remNode.parentNode.removeChild(remNode);
+				}
 			};
+		}
+
+		var newReminder = function(time) {
+			var ampm = null;
+			if(time>=0) ampm = hourToAMPM(time);
+			var div = document.createElement("div");
+			div.className = 'form-group';
+			div.innerHTML = '<div class="row"> \
+						<div class="col-xs-6"> \
+							<input class="form-control" name="reminder"'+(ampm ? ' value="'+ampm.v+'"' : '')+' type="number" placeholder="10" /> \
+						</div> \
+						<div class="col-xs-4"> \
+							<select class="form-control" name="reminderTime"> \
+								<option value="pm"'+(ampm ? (ampm.t=="pm" ? ' selected' : '') : '')+'>PM</option> \
+								<option value="am"'+(ampm ? (ampm.t=="am" ? ' selected' : '') : '')+'>AM</option> \
+							</select> \
+						</div> \
+						<div class="col-xs-2"> \
+							<button type="button" class="removeReminder btn btn-danger pull-right">X</button> \
+						</div> \
+					</div> \
+					<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>';
+			document.getElementById('Reminders').appendChild(div);
+			setOnClickEvents();
+		}
+
+
+		document.getElementById("addTask").onclick = function(e) {
+			e.preventDefault();
+			var div = document.createElement("div");
+			div.className = 'form-group';
+			div.innerHTML = '<input class="form-control" name="task" type="text" placeholder="My New Task" />';
+			document.getElementById('Tasks').appendChild(div);
+		}		
+
+		document.getElementById("addReminder").onclick = function(e) {
+			e.preventDefault();
+			newReminder();
 		}
 
 		window.onsubmit = function(e) {
 			e.preventDefault();
 			var err = false;
-			var options = {
-				morning: AMPMToHour('morning'),
-				evening: AMPMToHour('evening'),
-				night: AMPMToHour('night')
-			}
-			for (name in options) {
-				if(options[name] == -1) {
-					hasError(name);
+			var tasks = document.getElementById('Tasks').querySelectorAll('.form-group input');
+			var newTasks = [];
+			for (var i = 0; i < tasks.length; i++) {
+				if(tasks[i].value) newTasks.push(tasks[i].value);
+			};
+			var reminders = document.getElementById('Reminders').querySelectorAll('.form-group');
+			var newReminders = [];
+			for (var i = 0; i < reminders.length; i++) {
+				if(AMPMToHour(reminders[i]) >= 0) newReminders.push(AMPMToHour(reminders[i]));
+				else {
+					hasError(reminders[i]);
 					err = true;
 				}
 			};
+			var options = {
+				reminders: newReminders,
+				tasks: newTasks
+			}
 			if(!err) {
-				document.location.search = '?morning=' + options.morning + "&evening=" + options.evening + "&night=" + options.night;
-				document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+				var strRem = JSON.stringify(newReminders);
+				document.location.search = '?reminders=' + strRem;
+				setTimeout(function() {
+					document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
+				}, 100);
 			}
 		};
-
-		for (var i = 0; i < fieldNames.length; i++) {
-			var checked = function (fieldName) {
-				document.getElementById(fieldName+"Disabled").onchange = function(e) {
-					if(e.target.checked) {
-						document.getElementById(fieldName).disabled = true;
-						document.getElementById(fieldName+"Time").disabled = true;
-					} else {
-						document.getElementById(fieldName).disabled = false;
-						document.getElementById(fieldName+"Time").disabled = false;
-					};
-				}
-			};
-			checked(fieldNames[i]);
-		};
-
 
 		updateValues();
 	</script>
