@@ -10,7 +10,10 @@
 			color: white; 
 			height: 50px; 
 			width: 100%;
-			margin-bottom: 20px;
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 400;
 		}
 
 		.back {
@@ -37,6 +40,10 @@
 			margin-left: 10px;
 			color: white;
 		}
+
+		.main {
+			padding-top: 70px;
+		}
 	</style>
 </head>
 <body>
@@ -46,52 +53,39 @@
 		</a>
 		<h4 class="title">ToDoIt Settings</h4>
 	</div>
-	<div class="container-fluid">
+	<div class="container-fluid main">
 		<form>
-			<div class="form-group">
-				<label class="control-label" for="morning">Morning</label>
-				<div class="row">
-					<div class="col-xs-8">
-						<input class="form-control" name="morning" id="morning" type="number" placeholder="10" />
-					</div>
-					<div class="col-xs-4">
-						<select class="form-control" name="morningTime" id="morningTime">
-							<option value="pm">PM</option>
-							<option value="am" selected>AM</option>
-						</select>
-					</div>
+			<legend>Tasks</legend>
+			<div id="Tasks">
+				<div class="form-group">
+					<input class="form-control" name="task" type="text" placeholder="My New Task" />
 				</div>
-				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
 			</div>
 			<div class="form-group">
-				<label class="control-label" for="evening">Evening</label>
-				<div class="row">
-					<div class="col-xs-8">
-						<input class="form-control" name="evening" id="evening" type="number" placeholder="5" />
+				<button type="button" id="addTask" class="btn btn-info">+ Add Another Task</button>
+			</div>
+			<legend>Reminders</legend>
+			<div id="Reminders">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-6">
+							<input class="form-control" name="reminder" type="number" placeholder="10" />
+						</div>
+						<div class="col-xs-4">
+							<select class="form-control" name="reminderTime">
+								<option value="pm">PM</option>
+								<option value="am">AM</option>
+							</select>
+						</div>
+						<div class="col-xs-2">
+							<button type="button" class="removeReminder btn btn-danger pull-right">X</button>
+						</div>
 					</div>
-					<div class="col-xs-4">
-						<select class="form-control" name="eveningTime" id="eveningTime">
-							<option value="pm" selected>PM</option>
-							<option value="am">AM</option>
-						</select>
-					</div>
+					<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
 				</div>
-				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
 			</div>
 			<div class="form-group">
-				<label class="control-label" for="night">Night</label>
-				<div class="row">
-					<div class="col-xs-8">
-						<input class="form-control" name="night" id="night" type="number" placeholder="10" />
-					</div>
-					<div class="col-xs-4">
-						<select class="form-control" name="nightTime" id="nightTime">
-							<option value="pm" selected>PM</option>
-							<option value="am">AM</option>
-						</select>
-					</div>
-				</div>
-				<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>
+				<button type="button" id="addReminder" class="btn btn-info">+ Add Another Reminder</button>
 			</div>
 			<div class="form-group text-center">
 				<button class="btn btn-primary btn-lg" style="width: 100%;" type="submit">Save</button>
@@ -138,6 +132,49 @@
 			};
 		}
 
+		var setOnClickEvents = function() {
+			var remindersBtn = document.getElementById('Reminders').querySelectorAll('.form-group .removeReminder');
+			for (var i = 0; i < remindersBtn.length; i++) {
+				remindersBtn[i].onclick = function(e) {
+					e.preventDefault();
+					remNode = e.target.parentNode.parentNode.parentNode;
+					remNode.parentNode.removeChild(remNode);
+				}
+			};
+		}
+
+
+		document.getElementById("addTask").onclick = function(e) {
+			e.preventDefault();
+			var div = document.createElement("div");
+			div.className = 'form-group';
+			div.innerHTML = '<input class="form-control" name="task" type="text" placeholder="My New Task" />';
+			document.getElementById('Tasks').appendChild(div);
+		}		
+
+		document.getElementById("addReminder").onclick = function(e) {
+			e.preventDefault();
+			var div = document.createElement("div");
+			div.className = 'form-group';
+			div.innerHTML = '<div class="row"> \
+						<div class="col-xs-6"> \
+							<input class="form-control" name="reminder" type="number" placeholder="10" /> \
+						</div> \
+						<div class="col-xs-4"> \
+							<select class="form-control" name="reminderTime"> \
+								<option value="pm">PM</option> \
+								<option value="am">AM</option> \
+							</select> \
+						</div> \
+						<div class="col-xs-2"> \
+							<button type="button" class="removeReminder btn btn-danger pull-right">X</button> \
+						</div> \
+					</div> \
+					<span style="display: none;" class="help-block">Have to be a valid hour in 1-12 AM/PM format</span>';
+			document.getElementById('Reminders').appendChild(div);
+			setOnClickEvents();
+		}
+
 		window.onsubmit = function(e) {
 			e.preventDefault();
 			var options = {
@@ -145,11 +182,18 @@
 				evening: document.getElementById('evening').value,
 				night: document.getElementById('night').value
 			}
-			document.location.search = '?morning=' + (options.morning ? options.morning : "0") + "&evening=" + (options.evening ? options.evening : "0") + "&night=" + (options.night ? options.night : "0");
+			var tasks = document.getElementById('Tasks').querySelectorAll('.form-group input');
+			var newTasks = [];
+			for (var i = 0; i < tasks.length; i++) {
+				if(tasks[i].value) newTasks.push(tasks[i].value);
+			};
+			console.log(newTasks);
+			//document.location.search = '?morning=' + (options.morning ? options.morning : "0") + "&evening=" + (options.evening ? options.evening : "0") + "&night=" + (options.night ? options.night : "0");
 			//document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
 		};
 
 		updateValues();
+		setOnClickEvents();
 	</script>
 </body>
 </html>
