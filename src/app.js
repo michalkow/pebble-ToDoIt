@@ -350,7 +350,7 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://todoit.neocities.org/index.html?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"),
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"),
     autoSave: false
   },
   function(e) {
