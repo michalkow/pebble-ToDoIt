@@ -13,8 +13,6 @@ var Light = require('ui/light');
 var Settings = require('settings');
 var Platform = require('platform');
 
-console.log('Phone language is ' + navigator.language);
-
 if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
     console.log(JSON.stringify(Pebble));
     var colors = {
@@ -376,20 +374,3 @@ Settings.config({
 if(new Date(store.getNextAlert()).getTime() < new Date().getTime()) {
   setNextAlert();
 }
-
-var convert = function(text){
-    var result = "";
-    var vals = [];
-    for(var i = 0; i < text.length; i++){
-        vals.push(text.charCodeAt(i));
-    }
-    for (var i = 0; i < vals.length; i++) {
-      result+=String.fromCharCode(vals[i]);
-    };
-    return result;
-};
-
-store.addTask(convert('корпоратив'));
-store.addTask(convert('как'));
-store.addTask(convert('пойдёте'));
-tasks.items(0, store.getDisplayTasks('tasks'));
