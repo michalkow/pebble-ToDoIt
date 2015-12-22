@@ -14,7 +14,6 @@ var Settings = require('settings');
 var Platform = require('platform');
 
 if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
-    console.log(JSON.stringify(Pebble));
     var colors = {
       green: '#00AA55',
       lblue: '#00AAFF',
@@ -67,6 +66,7 @@ var store = {
     if(value) tasks = JSON.parse(value);
     var task = {title: text, added: new Date()};
     tasks.unshift(task);
+    setNextAlert();
     return pebbleStorage.setItem('tasks', JSON.stringify(tasks));
   },
   moveTask: function(from, to, index) {
@@ -81,6 +81,7 @@ var store = {
     toTasks.unshift(task);
     pebbleStorage.setItem(from, JSON.stringify(fromTasks));
     pebbleStorage.setItem(to, JSON.stringify(toTasks));
+    setNextAlert();
     return true;
   },
   clearHistory: function() {
@@ -140,7 +141,6 @@ var voiceAdd = function(callback) {
 
     Voice.dictate('start', false, function(e) {
       if (e.err) {
-        console.log('Error: ' + e.err);
         card.hide();
         return;
       } else {
@@ -169,44 +169,46 @@ var voiceAdd = function(callback) {
 };
 
 var setNextAlert = function() {
-  var reminders = [];
-  if(Settings.option('reminders')) { 
-    reminders = JSON.parse(Settings.option('reminders'));
-  } else reminders = [11,17,21];
-  console.log("Alert Times:");
-  console.log(JSON.stringify(reminders));
-  if(reminders.length>0) {
-    reminders.sort();
-    // Take date 10 min from now
-    var now = new Date(new Date().getTime() + 10 * 60 * 1000);
-    var day = now.getUTCDay();
-    var hours = now.getHours();
-    var nextHours = null;
-    var nextDay = day;
-    for (var i = 0; i < reminders.length; i++) {
-      if(hours < reminders[i]) {
-        nextHours = reminders[i];
-        break;
-      }
-    }
-    if(nextHours===null) {
-      if(nextDay == 6) nextDay = 0;
-      else nextDay++; 
-      nextHours = reminders[0];
-    }
-    console.log('wakeup ' + nextDay + ' ' + nextHours);
-    var nextTime = Clock.weekday(nextDay, nextHours, 0);
-    Wakeup.cancel('all');
-    Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
-      function(e) {
-        if (e.failed) {
-          // Log the error reason
-          console.log('Wakeup set failed: ' + e.error);
-        } else {
-          store.setAlert(nextTime);
+  if(store.getTasks('tasks').length > 0) {
+    var reminders = [];
+    if(Settings.option('reminders')) { 
+      reminders = JSON.parse(Settings.option('reminders'));
+    } else reminders = [11,17,21];
+    if(reminders.length>0) {
+      reminders.sort();
+      // Take date 10 min from now
+      var now = new Date(new Date().getTime() + 10 * 60 * 1000);
+      var day = now.getUTCDay();
+      var hours = now.getHours();
+      var nextHours = null;
+      var nextDay = day;
+      for (var i = 0; i < reminders.length; i++) {
+        if(hours < reminders[i]) {
+          nextHours = reminders[i];
+          break;
         }
       }
-    );
+      if(nextHours===null) {
+        if(nextDay == 6) nextDay = 0;
+        else nextDay++; 
+        nextHours = reminders[0];
+      }
+      var nextTime = Clock.weekday(nextDay, nextHours, 0);
+      Wakeup.cancel('all');
+      Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
+        function(e) {
+          if (e.failed) {
+            // Log the error reason
+            console.log('Wakeup set failed: ' + e.error);
+            Wakeup.cancel('all');
+          } else {
+            store.setAlert(nextTime);
+          }
+        }
+      );
+    }
+  } else {
+    Wakeup.cancel('all');
   }
 };
 
@@ -348,16 +350,14 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"),
+    url: 'http://michalkow.github.io/pebble-ToDoIt/',
     autoSave: false
   },
   function(e) {
-    console.log('http://michalkow.github.io/pebble-ToDoIt/?reminders='+(Settings.option('reminders') ? Settings.option('reminders') : "[11,17,21]"));
     configuration.show();
   },
   function(e) {
     if(e.options) {
-      console.log(JSON.stringify(e.options));
       if(e.options.reminders) Settings.option('reminders', JSON.stringify(e.options.reminders));
       if(e.options.tasks) {
         for (var i = 0; i < e.options.tasks.length; i++) {
