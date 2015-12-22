@@ -238,11 +238,7 @@
 				tasks: newTasks
 			}
 			if(!err) {
-				var strRem = JSON.stringify(newReminders);
-				document.location.search = '?reminders=' + strRem;
-				setTimeout(function() {
-					document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
-				}, 1000);
+				document.location = 'pebblejs://close#' + encodeURIComponent(JSON.stringify(options));
 			}
 		};
 
