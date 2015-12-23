@@ -14,20 +14,29 @@ var Settings = require('settings');
 var Platform = require('platform');
 
 var locales = {
-  zh: {
-    "Add New Task": "添加新任务",
-    "Do Tasks": "要任务",
-    "Browse Tasks": "浏览任务",
-    "Task History": "任务历史记录"
+  pl: {
+    "Clear History": "Usuń Historię",
+    "Add New Task": "Dodaj Zadanie",
+    "Added Today": "Dodane Dzisiaj",
+    "Added Yesterday": "Dodane Wczoraj",
+    "Added ": "Dodane ",
+    " ago": " dni temu",
+    "No Mic": " Brak Mikrofonu",
+    "Sorry, you will have to add new tasks via app configuration in your phone": "Przepraszamy, bęsziesz musiał dodać zadania przez ustawienia applikacji w telefonie",
+    "ToDoIt configuration is open": "Konfiguracja ToDoIt otwarta",
+    "Check your phone for configuration options": "Sprawdź opcje konfiguracji na telefonie",
+    "Current Tasks": "Obecne Zadania",
+    'Task History': "Historia Zadań",
+    'Do Tasks': "Wykonaj Zadania",
+    'Browse Tasks': "Zobacz Zadania",
+    'Task History': "Historia Zadań"
   }
 }
 
 console.log('Phone language is ' + navigator.language);
 var __ = function(key) {
   var lang = navigator.language.substring(0,2);
-  //test 
-  console.log(lang + ' zh');
-  lang = 'zh';
+  console.log("Locale is: "+lang);
   if(locales[lang]) {
     if(locales[lang][key]) return locales[lang][key];
     else return key;
@@ -123,9 +132,9 @@ var daysAgo = function(added) {
   added = new Date(added);
   var diffDays = Math.round(Math.abs((added.getTime() - now.getTime())/(oneDay)));
 
-  if(diffDays<1) return "Added" + "Today";
-  else if(diffDays==1) return "Added" __+() "Yesterday";
-  else if(diffDays>1) return "Added "+diffDays+" ago";
+  if(diffDays<1) return __("Added Today");
+  else if(diffDays==1) return __("Added Yesterday");
+  else if(diffDays>1) return __("Added ")+diffDays+__(" ago");
 };
 
 var validateTime = function(time) {
@@ -137,7 +146,7 @@ var validateTime = function(time) {
 var voiceAdd = function(callback) {
   if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') {
     var card = new UI.Card({
-      title: "Add Task?",
+      title: __("Add Task?"),
       fullscreen: true,
       backgroundColor: colors.green
     });
@@ -171,8 +180,8 @@ var voiceAdd = function(callback) {
     });
   } else {
     var card = new UI.Card({
-      title: "No Mic",
-      body: "Sorry, you will have to add new tasks via app configuration in your phone",
+      title: __("No Mic"),
+      body: __("Sorry, you will have to add new tasks via app configuration in your phone"),
       fullscreen: true,
       backgroundColor: 'white'
     });
@@ -297,8 +306,8 @@ var displayCard = function(type, index, next, wakeup) {
 };
 
 var configuration = new UI.Card({
-  title: "ToDoIt configuration is open",
-  body: "Check your phone for configuration options",
+  title: __("ToDoIt configuration is open"),
+  body: __("Check your phone for configuration options"),
   fullscreen: true,
   backgroundColor: colors.lblue
 });
@@ -309,7 +318,7 @@ var tasks = new UI.Menu({
   highlightBackgroundColor: colors.dblue,
   highlightTextColor: 'white',
   sections: [{
-    title: "Current Tasks",
+    title: __("Current Tasks"),
     items: store.getDisplayTasks('tasks')
   }]
 });
@@ -328,7 +337,7 @@ var history = new UI.Menu({
   highlightBackgroundColor: colors.purple,
   highlightTextColor: 'white',
   sections: [{
-    title: 'Task History',
+    title: __('Task History'),
     items: store.getDisplayTasks('history')
   }]
 });
