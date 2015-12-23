@@ -13,6 +13,27 @@ var Light = require('ui/light');
 var Settings = require('settings');
 var Platform = require('platform');
 
+var locales = {
+  zh: {
+    "Add New Task": "添加新任务",
+    "Do Tasks": "要任务",
+    "Browse Tasks": "浏览任务",
+    "Task History": "任务历史记录"
+  }
+}
+
+console.log('Phone language is ' + navigator.language);
+var __ = function(key) {
+  var lang = navigator.language.substring(0,2);
+  //test 
+  console.log(lang + ' zh');
+  lang = 'zh';
+  if(locales[lang]) {
+    if(locales[lang][key]) return locales[lang][key];
+    else return key;
+  } else return key;
+}
+
 if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') { //There exists Pebble.getActiveWatchInfo().platform; however it appears to be broken. I'll check into this further
     var colors = {
       green: '#00AA55',
@@ -51,8 +72,8 @@ var store = {
     if(!type) type = 'tasks';
     var value = pebbleStorage.getItem(type);
     var tasks = value ? JSON.parse(value) : [];
-    if(type=="history") tasks.unshift({title: "Clear History", icon: "images/remove.png"});
-    else tasks.unshift({title: "Add New Task", icon: "images/plus.png"});
+    if(type=="history") tasks.unshift({title: __("Clear History"), icon: "images/remove.png"});
+    else tasks.unshift({title: __("Add New Task"), icon: "images/plus.png"});
     return tasks;
   },
   getTask: function(type, index) {
@@ -102,8 +123,8 @@ var daysAgo = function(added) {
   added = new Date(added);
   var diffDays = Math.round(Math.abs((added.getTime() - now.getTime())/(oneDay)));
 
-  if(diffDays<1) return "Added Today";
-  else if(diffDays==1) return "Added Yesterday";
+  if(diffDays<1) return "Added" + "Today";
+  else if(diffDays==1) return "Added" __+() "Yesterday";
   else if(diffDays>1) return "Added "+diffDays+" ago";
 };
 
@@ -196,8 +217,8 @@ var setNextAlert = function() {
         nextHours = reminders[0];
       }
       console.log(now);
-      console.log(nextTime);
       var nextTime = Clock.weekday(nextDay, nextHours, 0);
+      console.log(nextTime);
       Wakeup.cancel('all');
       Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
         function(e) {
@@ -325,10 +346,10 @@ var main = new UI.Menu({
   highlightTextColor: 'white',
   sections: [{
     items: [
-      {title: 'Add New Task', icon: 'images/plus.png'},
-      {title: 'Do Tasks', icon: 'images/check.png'},
-      {title: 'Browse Tasks', icon: 'images/tasks.png'},
-      {title: 'Task History', icon: 'images/history.png'}
+      {title: __('Add New Task'), icon: 'images/plus.png'},
+      {title: __('Do Tasks'), icon: 'images/check.png'},
+      {title: __('Browse Tasks'), icon: 'images/tasks.png'},
+      {title: __('Task History'), icon: 'images/history.png'}
     ]
   }]
 });
