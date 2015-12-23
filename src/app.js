@@ -174,10 +174,12 @@ var setNextAlert = function() {
     if(Settings.option('reminders')) { 
       reminders = JSON.parse(Settings.option('reminders'));
     } else reminders = [11,17,21];
+    console.log('Reminders: '+JSON.stringify(reminders));
     if(reminders.length>0) {
-      reminders.sort();
-      // Take date 10 min from now
-      var now = new Date(new Date().getTime() + 10 * 60 * 1000);
+      reminders.sort(function(a, b) { return a-b });
+      console.log('Reminders sorted: '+JSON.stringify(reminders));
+      // Take date 5 min from now
+      var now = new Date(new Date().getTime() + 5 * 60 * 1000);
       var day = now.getUTCDay();
       var hours = now.getHours();
       var nextHours = null;
@@ -193,6 +195,8 @@ var setNextAlert = function() {
         else nextDay++; 
         nextHours = reminders[0];
       }
+      console.log(now);
+      console.log(nextTime);
       var nextTime = Clock.weekday(nextDay, nextHours, 0);
       Wakeup.cancel('all');
       Wakeup.schedule({time: nextTime, data: {alarmTime: nextTime}},
@@ -202,12 +206,14 @@ var setNextAlert = function() {
             console.log('Wakeup set failed: ' + e.error);
             Wakeup.cancel('all');
           } else {
+            console.log('Wakeup set - '+nextDay +' '+ nextHours)
             store.setAlert(nextTime);
           }
         }
       );
     }
   } else {
+    console.log('No tasks - clear wake up');
     Wakeup.cancel('all');
   }
 };
