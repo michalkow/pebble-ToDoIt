@@ -33,10 +33,8 @@ var locales = {
   }
 }
 
-console.log('Phone language is ' + navigator.language);
 var __ = function(key) {
   var lang = navigator.language.substring(0,2);
-  console.log("Locale is: "+lang);
   if(locales[lang]) {
     if(locales[lang][key]) return locales[lang][key];
     else return key;
