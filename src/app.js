@@ -12,6 +12,7 @@ var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 var Settings = require('settings');
 var Platform = require('platform');
+var tertiaryText = require('../pebble-tertiary_text.js/src/app.js');
 
 var locales = {
   pl: {
@@ -179,22 +180,10 @@ var voiceAdd = function(callback) {
       }
     });
   } else {
-    var card = new UI.Card({
-      title: __("No Mic"),
-      body: __("Sorry, you will have to add new tasks via app configuration in your phone"),
-      fullscreen: true,
-      backgroundColor: 'white'
-    });
-
-    card.action({
-      select: 'images/tick.png',
-    });
-    
-    card.on('click', 'select', function() {
-      card.hide();
-    });
-
-    card.show();
+    tertiaryText('Add New Task', function(text) {
+      store.addTask(text);
+      if(callback) callback();
+    }); 
   }
 };
 
