@@ -1,0 +1,3 @@
+[submodule "src/pebble-tertiary_text.js"]
+	path = src/pebble-tertiary_text.js
+	url = https://github.com/michalkow/pebble-tertiary_text.js.git
