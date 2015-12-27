@@ -61,10 +61,6 @@ if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') { //There e
       orange: 'black',
       purple: 'black',
     }
-
-    if(!Settings.option('tertiaryText')) { 
-      Settings.option('tertiaryText', false) 
-    }
 }
 
 var pebbleStorage = window.localStorage || localStorage;
