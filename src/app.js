@@ -61,6 +61,10 @@ if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') { //There e
       orange: 'black',
       purple: 'black',
     }
+
+    if(!Settings.option('tertiaryText')) { 
+      Settings.option('tertiaryText', false) 
+    }
 }
 
 var pebbleStorage = window.localStorage || localStorage;
@@ -375,7 +379,7 @@ Wakeup.on('wakeup', function(e) {
 });
 
 Settings.config({ 
-    url: 'http://michalkow.github.io/pebble-ToDoIt/',
+    url: 'http://michalkow.github.io/pebble-ToDoIt/?platform='+Platform.version(),
     autoSave: false
   },
   function(e) {
