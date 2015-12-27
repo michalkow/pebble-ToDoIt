@@ -12,7 +12,7 @@ var Vibe = require('ui/vibe');
 var Light = require('ui/light');
 var Settings = require('settings');
 var Platform = require('platform');
-var tertiaryText = require('./pebble-tertiary_text.js/src/app.js');
+var tertiaryText = require('./tertiaryText.js');
 
 var locales = {
   pl: {
