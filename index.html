@@ -147,13 +147,15 @@
 			if(location.hash) query = decodeURIComponent(location.hash.substring(1));
 			if(query.length>1) {
 				query = JSON.parse(query);
-				var reminders = query.reminders;
-				console.log(query);
-				reminders.sort(function(a, b) {
-					return a - b;
-				});
-				for (var i = 0; i < reminders.length; i++) {
-					newReminder(reminders[i]);
+				if(query.reminders) {
+					var reminders = JSON.parse(query.reminders);
+					console.log(reminders);
+					reminders.sort(function(a, b) {
+						return a - b;
+					});
+					for (var i = 0; i < reminders.length; i++) {
+						newReminder(reminders[i]);
+					}
 				}
 			}
 		}
