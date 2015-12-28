@@ -143,9 +143,11 @@
 		}
 
 		var updateValues = function() {
-			var query = getQueryParam('reminders', "[11,17,21]");
-			if(query) {
-				var reminders = JSON.parse(query);
+			var query = decodeURIComponent(location.search.split("#")[1]);
+			if(query.length>1) {
+				query = JSON.parse(query);
+				var reminders = query.reminders;
+				console.log(query);
 				reminders.sort(function(a, b) {
 					return a - b;
 				});
