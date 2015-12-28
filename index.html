@@ -71,6 +71,14 @@
 			<div class="form-group">
 				<button type="button" id="addReminder" class="btn btn-info">+ Add Another Reminder</button>
 			</div>
+			<div id="Settings" style="display: none;">
+				<legend>Settings</legend>
+				<div class="checkbox">
+	        <label>
+	          <input id="tertiary" name="tertiary" type="checkbox"> Disable voice input <span class="help-block">App will use tertiary text input</span>
+	        </label>
+	      </div>
+			</div>
 			<div class="form-group text-center">
 				<button class="btn btn-primary btn-lg" style="width: 100%;" type="submit">Save</button>
 			</div>
@@ -89,6 +97,7 @@
 		}
 
 		var return_to = getQueryParam('return_to', 'pebblejs://close#');
+		var platform = getQueryParam('platform', 'unknown');
 
 		var hourToAMPM = function(h) {
 			if(h < 0) return null;
@@ -156,6 +165,10 @@
 					for (var i = 0; i < reminders.length; i++) {
 						newReminder(reminders[i]);
 					}
+				}
+				if(query.tertiary) {
+					var tertiary = JSON.parse(query.tertiary);
+					if(tertiary) document.getElementById('tertiary').checked = true;
 				}
 			}
 		}
@@ -231,7 +244,8 @@
 			};
 			var options = {
 				reminders: newReminders,
-				tasks: newTasks
+				tasks: newTasks,
+				tertiary: document.getElementById('tertiary').checked
 			}
 			if(!err) {
 				document.location = return_to + encodeURIComponent(JSON.stringify(options));
@@ -239,6 +253,10 @@
 		};
 
 		updateValues();
+
+		if(platform != 'aplite' && platform != 'pypkjs') {
+			document.getElementById('Settings').style.display = "block";
+		}
 	</script>
 </body>
 </html>
