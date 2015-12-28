@@ -384,6 +384,7 @@ Settings.config({
   function(e) {
     if(e.options) {
       if(e.options.reminders) Settings.option('reminders', JSON.stringify(e.options.reminders));
+      if(e.options.tertiary) Settings.option('tertiary', e.options.tertiary);
       if(e.options.tasks) {
         for (var i = 0; i < e.options.tasks.length; i++) {
           store.addTask(e.options.tasks[i]);
