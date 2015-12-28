@@ -145,7 +145,7 @@ var validateTime = function(time) {
 };
 
 var voiceAdd = function(callback) {
-  if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs') {
+  if(Platform.version() != 'aplite' && Platform.version() != 'pypkjs' && !Settings.option('tertiary')) {
     var card = new UI.Card({
       title: __("Add Task?"),
       fullscreen: true,
@@ -384,7 +384,11 @@ Settings.config({
   function(e) {
     if(e.options) {
       if(e.options.reminders) Settings.option('reminders', JSON.stringify(e.options.reminders));
-      if(e.options.tertiary) Settings.option('tertiary', e.options.tertiary);
+      if(e.options.tertiary) { 
+        console.log('tertiarySett ' + Settings.option('tertiary'));
+        console.log('tertiary ' + e.options.tertiary);
+        Settings.option('tertiary', e.options.tertiary); 
+      }
       if(e.options.tasks) {
         for (var i = 0; i < e.options.tasks.length; i++) {
           store.addTask(e.options.tasks[i]);
