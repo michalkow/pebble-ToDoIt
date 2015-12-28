@@ -144,7 +144,7 @@
 
 		var updateValues = function() {
 			var query = "";
-			if(location.search.split("#")[1]) query = decodeURIComponent(location.search.split("#")[1]);
+			if(location.hash) query = decodeURIComponent(location.hash.substring(1));
 			if(query.length>1) {
 				query = JSON.parse(query);
 				var reminders = query.reminders;
